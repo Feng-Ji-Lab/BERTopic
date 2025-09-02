@@ -1,3 +1,5 @@
 ^BERTopic\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^NEXT STEPS\.md$
+^demo_bertopic\.R$
