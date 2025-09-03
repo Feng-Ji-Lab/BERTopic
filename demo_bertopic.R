@@ -1,5 +1,51 @@
-library(BERTopic)
+suppressPackageStartupMessages({
+  library(devtools)   # for load_all() during development
+})
+# Load the package from the project (skip if installed from source already)
+if (basename(getwd()) != "BERTopic") {
+  message("NOTE: current working directory is not the package root; load_all() may fail.")
+}
+try(load_all(), silent = TRUE)
 
+suppressPackageStartupMessages({
+  library(BERTopic)
+  library(reticulate)
+})
+
+# --- 1) Python environment binding (CRITICAL when starting a fresh R session) --
+# You can customize the env name by setting Sys.setenv(BERTopic_CONDA_ENV = "your-env")
+env_name <- Sys.getenv("BERTopic_CONDA_ENV", unset = "r-bertopic")
+
+# Ensure the env exists; if not, stop with a clear message
+avail_envs <- tryCatch(reticulate::conda_list()$name, error = function(e) character(0))
+if (!env_name %in% avail_envs) {
+  stop(sprintf(
+    "Conda env '%s' not found.\n- Available: %s\n- Create it first or set Sys.setenv(BERTopic_CONDA_ENV='...')",
+    env_name, paste(avail_envs, collapse = ", ")
+  ))
+}
+
+# Bind the exact Python interpreter from that env BEFORE any Python initialization
+py_exec <- reticulate::conda_python(env_name)
+Sys.setenv(RETICULATE_PYTHON = py_exec)
+
+cat("\n[Env] Binding Python to conda env:", env_name, "\n")
+print(reticulate::py_config())
+
+# Sanity check: can we import required modules?
+needed <- c("bertopic", "sentence_transformers", "torch", "umap", "hdbscan")
+missing <- needed[!vapply(needed, reticulate::py_module_available, logical(1))]
+if (length(missing)) {
+  stop(sprintf(
+    "Missing Python modules in env '%s': %s\nInstall them in this env and rerun.",
+    env_name, paste(missing, collapse = ", ")
+  ))
+}
+
+# Package-level availability check
+if (!BERTopic::bertopic_available()) {
+  stop("BERTopic Python backend not available via reticulate; please verify environment binding.")
+}
 cat("\n[Demo] Using packaged dataset `sms_spam`...\n")
 data(sms_spam)
 cat("Rows:", nrow(sms_spam), "  Spam ratio:",

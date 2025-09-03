@@ -4,10 +4,7 @@
 \alias{bertopic_self_check}
 \title{Quick self-check for BERTopic R interface}
 \usage{
-bertopic_self_check(verbose = TRUE)
-}
-\arguments{
-\item{verbose}{Logical; print progress messages.}
+bertopic_self_check()
 }
 \value{
 A named list with fields:

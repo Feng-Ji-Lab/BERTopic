@@ -5,7 +5,6 @@
 #' - Is the 'bertopic' module importable and what's its version?
 #' - Minimal round trip: fit -> topics -> transform -> save -> load
 #'
-#' @param verbose Logical; print progress messages.
 #' @return A named list with fields:
 #'   \itemize{
 #'     \item python_ok (logical)

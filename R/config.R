@@ -6,13 +6,10 @@ use_bertopic_virtualenv <- function(env = getOption("BERTopic.env", "r-bertopic"
   invisible(env)
 }
 
-#' Use a conda env for BERTopic (session-scoped)
-#' @param env Conda env name
-#' @export
-use_bertopic_condaenv <- function(env) {
-  reticulate::use_condaenv(env, required = FALSE)
-  invisible(env)
-}
+# use_bertopic_condaenv <- function(env) {
+#   reticulate::use_condaenv(env, required = FALSE)
+#   invisible(env)
+# }
 
 #' Is Python + BERTopic available?
 #' @return logical
