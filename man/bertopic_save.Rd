@@ -2,24 +2,33 @@
 % Please edit documentation in R/save.R
 \name{bertopic_save}
 \alias{bertopic_save}
-\title{Save a BERTopic model to disk}
+\title{Save a BERTopic model}
 \usage{
 bertopic_save(
   model,
   path,
-  serialization = "pickle",
-  save_embedding_model = FALSE
+  serialization = c("pickle", "safetensors", "pt"),
+  save_embedding_model = FALSE,
+  overwrite = FALSE
 )
 }
 \arguments{
 \item{model}{A "bertopic_r" model.}
 
-\item{path}{File path (directory or file depending on BERTopic version).}
+\item{path}{Destination path (file or directory, as required by BERTopic).}
 
-\item{serialization}{Serialization backend, e.g. "pickle" or "safetensors" (passed to Python if supported).}
+\item{serialization}{One of "pickle", "safetensors", or "pt". Default "pickle".}
 
-\item{save_embedding_model}{Whether to save embedding model (passed to Python if supported).}
+\item{save_embedding_model}{Logical; whether to include the embedding model. Default FALSE.}
+
+\item{overwrite}{Logical; if TRUE and the target exists, it will be replaced.}
+}
+\value{
+Invisibly returns the normalized path.
 }
 \description{
-Save a BERTopic model to disk
+Save a fitted BERTopic model to disk. Depending on the serialization method,
+this may produce either a single file (e.g., *.pkl / *.pt / *.safetensors)
+or a directory bundle. The function does not pre-create the target path; it
+only ensures the parent directory exists and lets BERTopic decide the layout.
 }

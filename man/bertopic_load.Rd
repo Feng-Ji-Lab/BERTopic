@@ -2,16 +2,16 @@
 % Please edit documentation in R/save.R
 \name{bertopic_load}
 \alias{bertopic_load}
-\title{Load a BERTopic model from disk}
+\title{Load a BERTopic model}
 \usage{
 bertopic_load(path)
 }
 \arguments{
-\item{path}{Directory path passed to \code{\link[=bertopic_save]{bertopic_save()}}.}
+\item{path}{Path used in \code{\link[=bertopic_save]{bertopic_save()}} (file or directory).}
 }
 \value{
-A "bertopic_r" object with loaded Python model.
+A "bertopic_r" object with the loaded Python model.
 }
 \description{
-Load a BERTopic model from disk
+Load a BERTopic model from disk that was saved with \code{\link[=bertopic_save]{bertopic_save()}}.
 }
