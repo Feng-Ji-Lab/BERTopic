@@ -10,6 +10,10 @@ Imports:
     reticulate,
     rlang,
     tibble,
+Suggests:
+    Matrix,
+    htmltools,
+    testthat (>= 3.1.0),
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
