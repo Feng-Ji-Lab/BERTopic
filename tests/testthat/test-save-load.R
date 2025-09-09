@@ -1,22 +1,16 @@
-test_that("bertopic_save/bertopic_load support file and directory paths", {
+# tests/testthat/test-save-load.R
+test_that("bertopic_save/bertopic_load support file and directory paths (using sms_spam data)", {
   skip_on_cran()
   skip_if_not(BERTopic::bertopic_available(), "Python/BERTopic not available")
 
-  # corpus
-  docs <- rep(
-    c(
-      "topic modeling with transformers",
-      "BERTopic from R with reticulate",
-      "document clustering via embeddings and UMAP",
-      "HDBSCAN density based clustering",
-      "save and load a trained model",
-      "visualize topics and inspect terms"
-    ),
-    length.out = 30
-  )
+  # Use packaged dataset
+  data(sms_spam, package = "BERTopic")
+  docs <- sms_spam$text
+  expect_true(is.character(docs))
+  if (length(docs) > 120) docs <- docs[seq_len(120)]
 
   set_bertopic_seed(123)
-  # keep it simple; probabilities off reduces some deserialization edge cases
+  # Keep probabilities off to avoid some deserialization edge cases
   m <- bertopic_fit(docs, calculate_probabilities = FALSE)
   expect_s3_class(m, "bertopic_r")
 
@@ -25,7 +19,7 @@ test_that("bertopic_save/bertopic_load support file and directory paths", {
   dir_path  <- file.path(tmpdir, "bertopic_model_dir")
 
   # ----- single-file save (.pkl) with embedding model -----
-  if (file.exists(file_path)) unlink(file_path, force = TRUE)
+  if (file.exists(file_path) || dir.exists(file_path)) unlink(file_path, recursive = TRUE, force = TRUE)
   ret_file <- bertopic_save(
     m, file_path,
     serialization = "pickle",
@@ -34,12 +28,12 @@ test_that("bertopic_save/bertopic_load support file and directory paths", {
   )
   expect_true(is.character(ret_file) && length(ret_file) == 1)
   expect_true(file.exists(file_path))
-  expect_false(dir.exists(file_path))
+  expect_false(dir.exists(file_path))  # should not be a directory for .pkl
 
   m_file <- bertopic_load(file_path)
   expect_s3_class(m_file, "bertopic_r")
 
-  # sanity: get_topic_info and a topic's terms should work
+  # Sanity: topic info + terms
   ti_file <- bertopic_topics(m_file)
   expect_s3_class(ti_file, "tbl_df")
   expect_gte(nrow(ti_file), 1)
@@ -51,7 +45,7 @@ test_that("bertopic_save/bertopic_load support file and directory paths", {
     expect_gt(nrow(tt_file), 0)
   }
 
-  # try transform; gracefully skip on known upstream KeyError
+  # Try transform; skip on known upstream KeyError after load
   tr_err <- try(bertopic_transform(m_file, c("new unseen text")), silent = TRUE)
   if (inherits(tr_err, "try-error")) {
     msg <- conditionMessage(attr(tr_err, "condition"))
@@ -65,7 +59,7 @@ test_that("bertopic_save/bertopic_load support file and directory paths", {
   }
 
   # ----- directory save (bundle) with embedding model -----
-  if (dir.exists(dir_path)) unlink(dir_path, recursive = TRUE, force = TRUE)
+  if (file.exists(dir_path) || dir.exists(dir_path)) unlink(dir_path, recursive = TRUE, force = TRUE)
   ret_dir <- bertopic_save(
     m, dir_path,
     serialization = "pickle",
@@ -78,7 +72,7 @@ test_that("bertopic_save/bertopic_load support file and directory paths", {
   m_dir <- bertopic_load(dir_path)
   expect_s3_class(m_dir, "bertopic_r")
 
-  # topic info + terms
+  # Topic info + terms
   ti_dir <- bertopic_topics(m_dir)
   expect_s3_class(ti_dir, "tbl_df")
   expect_gte(nrow(ti_dir), 1)
@@ -90,7 +84,7 @@ test_that("bertopic_save/bertopic_load support file and directory paths", {
     expect_gt(nrow(tt_dir), 0)
   }
 
-  # transform attempt with the same graceful skip policy
+  # Transform attempt with the same graceful skip policy
   tr2_err <- try(bertopic_transform(m_dir, c("another text")), silent = TRUE)
   if (inherits(tr2_err, "try-error")) {
     msg <- conditionMessage(attr(tr2_err, "condition"))
