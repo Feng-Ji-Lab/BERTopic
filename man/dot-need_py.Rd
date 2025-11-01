@@ -2,11 +2,13 @@
 % Please edit documentation in R/utils-python.R
 \name{.need_py}
 \alias{.need_py}
-\title{Check Python availability and required modules at runtime}
+\title{Check Python availability and required modules at runtime (lazy init)}
 \usage{
 .need_py()
 }
 \description{
-Check Python availability and required modules at runtime
+Tries to initialize reticulate to the configured env (Conda first, then virtualenv).
+Falls back to the default Python if the named env does not exist.
+Errors with a clear message if 'bertopic' is still not importable.
 }
 \keyword{internal}

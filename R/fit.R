@@ -27,7 +27,7 @@ bertopic_fit <- function(text, embeddings = NULL, ...) {
   .need_py()
 
   # Try to attach the configured env; do not force failure if missing.
-  reticulate::use_virtualenv(get_py_env(), required = FALSE)
+  reticulate::use_condaenv(get_py_env(), required = FALSE)
 
   bt <- reticulate::import("bertopic")
   model <- bt$BERTopic(...)

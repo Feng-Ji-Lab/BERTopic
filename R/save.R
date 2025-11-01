@@ -65,7 +65,7 @@ bertopic_save <- function(model, path,
 #' @export
 bertopic_load <- function(path) {
   .need_py()
-  reticulate::use_virtualenv(get_py_env(), required = FALSE)
+  reticulate::use_condaenv(get_py_env(), required = FALSE)
   bt <- reticulate::import("bertopic")
   py_model <- NULL
   ok <- TRUE

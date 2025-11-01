@@ -2,7 +2,9 @@
 "_PACKAGE"
 
 .onLoad <- function(libname, pkgname) {
-  # Do not network, do not fail here.
-  op <- options(bertopicr.env = "r-bertopic")
-  invisible(op)
+  op <- options()
+  toset <- list(BERTopic.env = "r-bertopic")
+  toset <- toset[setdiff(names(toset), names(op))]
+  if (length(toset)) options(toset)
+  invisible()
 }

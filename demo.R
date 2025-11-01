@@ -1,9 +1,12 @@
 # demo-bertopic.R
-# A compact, offline-friendly demo that exercises most BERTopic R features.
-# Notes:
-# - Assumes your Python env is prepared (bertopic, sentence-transformers, umap-learn, hdbscan, torch).
-# - Visualizations are written to HTML files in tempdir().
-# - If a backend feature is unavailable, the demo prints a message and continues.
+suppressPackageStartupMessages({
+  library(devtools)   # for load_all() during development
+})
+# Load the package from the project (skip if installed from source already)
+if (basename(getwd()) != "BERTopic") {
+  message("NOTE: current working directory is not the package root; load_all() may fail.")
+}
+try(load_all(), silent = TRUE)
 
 suppressPackageStartupMessages({
   library(BERTopic)
@@ -14,12 +17,12 @@ suppressPackageStartupMessages({
 say <- function(...) cat(sprintf(paste0(..., "\n")))
 
 say("\n[0] Environment check")
-
+BERTopic::bertopic_available()
 # 1) Data -----------------------------------------------------------------------
 say("\n[1] Load packaged dataset")
 data("sms_spam", package = "BERTopic")
 docs <- sms_spam$text
-N <- length(docs)   # keep runtime modest
+N <- length(docs) 
 docs <- docs[seq_len(N)]
 say("  - Documents:", length(docs))
 
@@ -29,7 +32,6 @@ set_bertopic_seed(42)
 m <- bertopic_fit(
   text = docs,
   calculate_probabilities = TRUE
-  # embedding_model = "all-MiniLM-L6-v2" # uncomment if you want to fix the model id explicitly
 )
 print(m)
 
