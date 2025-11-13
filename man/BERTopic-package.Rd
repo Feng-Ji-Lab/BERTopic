@@ -4,12 +4,20 @@
 \name{BERTopic-package}
 \alias{BERTopic}
 \alias{BERTopic-package}
-\title{BERTopic: What the Package Does (One Line, Title Case)}
+\title{BERTopic: Topic Modeling with 'BERTopic' in R}
 \description{
-What the package does (one paragraph).
+Interface to the Python package 'BERTopic' for transformer-based topic modeling. Provides R wrappers to fit BERTopic models, transform new documents, update and reduce topics, extract topic- and document-level information, and generate interactive visualizations. Python backends and dependencies are managed via the 'reticulate' package.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/Feng-Ji-Lab/BERTopic}
+  \item Report bugs at \url{https://github.com/Feng-Ji-Lab/BERTopic/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Biying Zhou \email{biying.zhou@psu.edu}
 
 }
 \keyword{internal}
