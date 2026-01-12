@@ -7,11 +7,11 @@
 bertopic_as_document_topic_matrix(model, sparse = TRUE, prefix = TRUE)
 }
 \arguments{
-\item{model}{A "bertopic_r" model.}
+\item{model}{A "bertopic_r" model object.}
 
 \item{sparse}{Logical; if TRUE and Matrix is available, returns a sparse matrix.}
 
-\item{prefix}{Logical; if TRUE, prefix columns as "topic_\if{html}{\out{<id>}}".}
+\item{prefix}{Logical; if TRUE, prefix columns as topic ids.}
 }
 \value{
 A matrix or sparse Matrix of size n_docs x n_topics, or NULL.

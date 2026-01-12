@@ -3,9 +3,9 @@
 #' Extract the document-topic probabilities as a matrix. If probabilities were
 #' not computed during fitting, returns NULL (with a warning).
 #'
-#' @param model A "bertopic_r" model.
+#' @param model A "bertopic_r" model object.
 #' @param sparse Logical; if TRUE and Matrix is available, returns a sparse matrix.
-#' @param prefix Logical; if TRUE, prefix columns as "topic_<id>".
+#' @param prefix Logical; if TRUE, prefix columns as topic ids.
 #' @return A matrix or sparse Matrix of size n_docs x n_topics, or NULL.
 #' @export
 bertopic_as_document_topic_matrix <- function(model, sparse = TRUE, prefix = TRUE) {
