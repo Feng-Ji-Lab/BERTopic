@@ -1,15 +1,11 @@
 Package: BERTopic
 Type: Package
-Title: Topic Modeling with 'BERTopic' in R
+Title: Topic Modeling with 'BERTopic'
 Version: 0.1.0
 Authors@R: 
     person("Biying", "Zhou", email = "biying.zhou@psu.edu",
            role = c("aut", "cre"))
-Description: Interface to the Python package 'BERTopic' for transformer-based
-    topic modeling. Provides R wrappers to fit BERTopic models, transform new
-    documents, update and reduce topics, extract topic- and document-level
-    information, and generate interactive visualizations. Python backends and
-    dependencies are managed via the 'reticulate' package.
+Description: Interface to the Python package 'BERTopic' <[https://maartengr.github.io/BERTopic/index.html]https://maartengr.github.io/BERTopic/index.html> for transformer-based topic modeling. Provides R wrappers to fit BERTopic models, transform new documents, update and reduce topics, extract topic- and document-level information, and generate interactive visualizations. 'Python' backends and dependencies are managed via the 'reticulate' package.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: 

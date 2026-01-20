@@ -13,6 +13,9 @@ bertopic_visualize_documents(model, docs = NULL, file = NULL)
 
 \item{file}{Optional HTML output path.}
 }
+\value{
+An html file.
+}
 \description{
 Visualize embedded documents
 }

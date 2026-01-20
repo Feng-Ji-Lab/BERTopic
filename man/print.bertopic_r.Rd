@@ -11,6 +11,9 @@
 
 \item{...}{Unused.}
 }
+\value{
+No return value. Output will be printed.
+}
 \description{
 Print method for bertopic_r
 }

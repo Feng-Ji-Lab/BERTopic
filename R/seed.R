@@ -1,5 +1,6 @@
 #' Set random seed for R and Python backends
 #' @param seed Integer seed
+#' @return No return value. The seed will be changed.
 #' @export
 set_bertopic_seed <- function(seed) {
   stopifnot(length(seed) == 1L, is.numeric(seed), is.finite(seed))

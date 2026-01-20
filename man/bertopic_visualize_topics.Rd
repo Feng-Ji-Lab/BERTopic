@@ -11,6 +11,9 @@ bertopic_visualize_topics(model, file = NULL)
 
 \item{file}{Optional HTML output path. If NULL, returns htmltools::HTML.}
 }
+\value{
+An HTML file.
+}
 \description{
 Visualize topic map
 }

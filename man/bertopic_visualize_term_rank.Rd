@@ -11,6 +11,9 @@ bertopic_visualize_term_rank(model, file = NULL)
 
 \item{file}{Optional HTML output path.}
 }
+\value{
+No output. An HTML file will be saved.
+}
 \description{
 Visualize term rank evolution
 }

@@ -21,6 +21,9 @@ or a Python dataframe compatible with \code{visualize_topics_over_time()}.}
 
 \item{file}{Optional HTML output path.}
 }
+\value{
+An HTML object.
+}
 \description{
 Visualize topics over time
 }

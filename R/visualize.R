@@ -22,6 +22,7 @@
 #' Visualize topic map
 #' @param model A "bertopic_r" model.
 #' @param file Optional HTML output path. If NULL, returns htmltools::HTML.
+#' @return An HTML file.
 #' @export
 bertopic_visualize_topics <- function(model, file = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
@@ -35,6 +36,7 @@ bertopic_visualize_topics <- function(model, file = NULL) {
 #' @param model A "bertopic_r" model.
 #' @param topic_id Integer topic id. If NULL, a set of top topics is shown.
 #' @param file Optional HTML output path.
+#' @return A barchart.
 #' @export
 bertopic_visualize_barchart <- function(model, topic_id = NULL, file = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
@@ -53,6 +55,7 @@ bertopic_visualize_barchart <- function(model, topic_id = NULL, file = NULL) {
 #' Visualize hierarchical clustering of topics
 #' @param model A "bertopic_r" model.
 #' @param file Optional HTML output path.
+#' @return An html file output.
 #' @export
 bertopic_visualize_hierarchy <- function(model, file = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
@@ -65,6 +68,7 @@ bertopic_visualize_hierarchy <- function(model, file = NULL) {
 #' Visualize topic similarity heatmap
 #' @param model A "bertopic_r" model.
 #' @param file Optional HTML output path.
+#' @return An html file output.
 #' @export
 bertopic_visualize_heatmap <- function(model, file = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
@@ -77,6 +81,7 @@ bertopic_visualize_heatmap <- function(model, file = NULL) {
 #' Visualize term rank evolution
 #' @param model A "bertopic_r" model.
 #' @param file Optional HTML output path.
+#' @return No output. An HTML file will be saved. 
 #' @export
 bertopic_visualize_term_rank <- function(model, file = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
@@ -90,6 +95,7 @@ bertopic_visualize_term_rank <- function(model, file = NULL) {
 #' @param model A "bertopic_r" model.
 #' @param docs Optional character vector of documents to visualize.
 #' @param file Optional HTML output path.
+#' @return An html file.
 #' @export
 bertopic_visualize_documents <- function(model, docs = NULL, file = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
@@ -112,6 +118,7 @@ bertopic_visualize_documents <- function(model, docs = NULL, file = NULL) {
 #'   or a Python dataframe compatible with `visualize_topics_over_time()`.
 #' @param top_n Number of topics to display.
 #' @param file Optional HTML output path.
+#' @return An HTML object. 
 #' @export
 bertopic_visualize_topics_over_time <- function(model, topics_over_time, top_n = 10L, file = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")

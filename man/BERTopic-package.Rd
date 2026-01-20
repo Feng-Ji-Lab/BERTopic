@@ -4,9 +4,9 @@
 \name{BERTopic-package}
 \alias{BERTopic}
 \alias{BERTopic-package}
-\title{BERTopic: Topic Modeling with 'BERTopic' in R}
+\title{BERTopic: Topic Modeling with 'BERTopic'}
 \description{
-Interface to the Python package 'BERTopic' for transformer-based topic modeling. Provides R wrappers to fit BERTopic models, transform new documents, update and reduce topics, extract topic- and document-level information, and generate interactive visualizations. Python backends and dependencies are managed via the 'reticulate' package.
+Interface to the Python package 'BERTopic' <[https://maartengr.github.io/BERTopic/index.html]https://maartengr.github.io/BERTopic/index.html> for transformer-based topic modeling. Provides R wrappers to fit BERTopic models, transform new documents, update and reduce topics, extract topic- and document-level information, and generate interactive visualizations. 'Python' backends and dependencies are managed via the 'reticulate' package.
 }
 \seealso{
 Useful links:

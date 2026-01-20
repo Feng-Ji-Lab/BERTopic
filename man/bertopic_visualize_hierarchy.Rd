@@ -11,6 +11,9 @@ bertopic_visualize_hierarchy(model, file = NULL)
 
 \item{file}{Optional HTML output path.}
 }
+\value{
+An html file output.
+}
 \description{
 Visualize hierarchical clustering of topics
 }

@@ -70,6 +70,7 @@ bertopic_topics <- function(model) {
 #' Print method for bertopic_r
 #' @param x A "bertopic_r" object.
 #' @param ... Unused.
+#' @return No return value. Output will be printed.
 #' @export
 print.bertopic_r <- function(x, ...) {
   cat("<bertopic_r>\n")

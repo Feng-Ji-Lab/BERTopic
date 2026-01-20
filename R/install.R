@@ -459,12 +459,6 @@ bertopic_self_check <- function() {
     )
   }
 
-  # Reproducibility
-  if (exists("set_bertopic_seed", mode = "function")) {
-    try(set_bertopic_seed(42L), silent = TRUE)
-  } else {
-    set.seed(42L)
-  }
 
   # Construct model (with embedding model if available)
   model <- try(bt$BERTopic(

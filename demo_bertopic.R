@@ -2,9 +2,9 @@ suppressPackageStartupMessages({
   library(devtools)   # for load_all() during development
 })
 # Load the package from the project (skip if installed from source already)
-if (basename(getwd()) != "BERTopic") {
-  message("NOTE: current working directory is not the package root; load_all() may fail.")
-}
+# if (basename(getwd()) != "BERTopic") {
+#   message("NOTE: current working directory is not the package root; load_all() may fail.")
+# }
 try(load_all(), silent = TRUE)
 
 suppressPackageStartupMessages({

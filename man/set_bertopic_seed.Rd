@@ -9,6 +9,9 @@ set_bertopic_seed(seed)
 \arguments{
 \item{seed}{Integer seed}
 }
+\value{
+No return value. The seed will be changed.
+}
 \description{
 Set random seed for R and Python backends
 }

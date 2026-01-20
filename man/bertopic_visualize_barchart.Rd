@@ -13,6 +13,9 @@ bertopic_visualize_barchart(model, topic_id = NULL, file = NULL)
 
 \item{file}{Optional HTML output path.}
 }
+\value{
+A barchart.
+}
 \description{
 Visualize a topic barchart
 }
