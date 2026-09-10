@@ -19,5 +19,5 @@ in the current BERTopic version, a \code{score} column is included.
 }
 \description{
 Retrieve representative documents for a given topic using
-\code{BERTopic.get_representative_docs()}. Falls back across signature variants.
+\code{BERTopic.get_representative_docs()}. Limits the returned documents in R.
 }

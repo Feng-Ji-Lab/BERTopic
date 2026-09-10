@@ -52,7 +52,7 @@ bertopic_find_topics <- function(model, query_text, top_n = 5L) {
 #' Representative documents for a topic
 #'
 #' Retrieve representative documents for a given topic using
-#' `BERTopic.get_representative_docs()`. Falls back across signature variants.
+#' `BERTopic.get_representative_docs()`. Limits the returned documents in R.
 #'
 #' @param model A "bertopic_r" model.
 #' @param topic_id Integer topic id.
@@ -68,17 +68,9 @@ bertopic_get_representative_docs <- function(model, topic_id, top_n = 5L) {
   docs <- NULL
   has_scores <- FALSE
 
-  ok <- TRUE
   out <- try({
-    # Most recent signature allows `nr_docs`
-    model$.py$get_representative_docs(as.integer(topic_id), nr_docs = as.integer(top_n))
+    model$.py$get_representative_docs(as.integer(topic_id))
   }, silent = TRUE)
-  if (inherits(out, "try-error")) {
-    ok <- FALSE
-  }
-  if (!ok) {
-    out <- try(model$.py$get_representative_docs(as.integer(topic_id), as.integer(top_n)), silent = TRUE)
-  }
 
   if (inherits(out, "try-error")) {
     rlang::abort("Python `get_representative_docs()` failed.")
