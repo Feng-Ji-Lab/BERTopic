@@ -423,7 +423,7 @@ bertopic_available <- function() {
 #' }
 #' @export
 bertopic_self_check <- function() {
-  out <- list(python_ok = FALSE, bertopic_ok = FALSE, details = character())
+  out <- list(python_ok = FALSE, bertopic_ok = FALSE, roundtrip_ok = FALSE, details = character())
 
   if (!requireNamespace("reticulate", quietly = TRUE)) {
     out$details <- c(out$details, "reticulate not available")
