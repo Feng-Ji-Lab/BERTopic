@@ -55,6 +55,16 @@ bertopic_reduce_topics <- function(model,
     ), silent = TRUE)
   }
   if (inherits(res, "try-error")) rlang::abort("Python `reduce_topics()` failed.")
+
+  # Keep the cached R fields synchronized with Python after reduction.
+  model$topics <- tryCatch(
+    unname(reticulate::py_to_r(model$.py$topics_)),
+    error = function(e) model$topics
+  )
+  model$probs <- tryCatch(
+    reticulate::py_to_r(model$.py$probabilities_),
+    error = function(e) model$probs
+  )
   invisible(model)
 }
 
