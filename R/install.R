@@ -491,6 +491,13 @@ bertopic_self_check <- function() {
     }
   }
 
+  tr <- try(model$transform(docs), silent = TRUE)
+  tmp <- file.path(tempdir(), paste0("bertopic-self-check-", Sys.getpid(), ".pkl"))
+  sv <- try(model$save(tmp), silent = TRUE)
+  ld <- if (!inherits(sv, "try-error")) try(bt$BERTopic$load(tmp), silent = TRUE) else structure("", class = "try-error")
+  out$roundtrip_ok <- !inherits(tr, "try-error") && !inherits(sv, "try-error") && !inherits(ld, "try-error")
+  if (file.exists(tmp)) unlink(tmp)
+
   # Success — only report OK
   out$details <- c(out$details, "OK")
   out
