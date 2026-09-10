@@ -77,6 +77,5 @@ bertopic_load <- function(path) {
   if (!ok) {
     py_model <- bt$BERTopic$load(path)
   }
-  structure(list(.py = py_model, topics = NULL, probs = NULL),
-            class = "bertopic_r")
+  topics <- tryCatch(unname(reticulate::py_to_r(py_model$topics_)), error = function(e) NULL)`n  probs <- tryCatch(reticulate::py_to_r(py_model$probabilities_), error = function(e) NULL)`n  structure(list(.py = py_model, topics = topics, probs = probs), class = "bertopic_r")
 }
