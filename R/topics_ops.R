@@ -17,12 +17,12 @@ bertopic_update_topics <- function(model, text) {
 
 #' Reduce/merge topics
 #'
-#' Wrapper over Python `reduce_topics`, compatible with multiple signatures.
+#' Wrapper over Python `reduce_topics`.
 #'
 #' @param model A "bertopic_r" model.
 #' @param nr_topics Target number (integer) or "auto".
 #' @param representation_model Optional Python representation model.
-#' @param docs Optional character vector of training docs (used if required by backend).
+#' @param docs Character vector of training docs.
 #' @return The input model (invisibly).
 #' @export
 bertopic_reduce_topics <- function(model,
@@ -30,36 +30,33 @@ bertopic_reduce_topics <- function(model,
                                    representation_model = NULL,
                                    docs = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
+  if (is.null(docs)) rlang::abort("`docs` must be provided for `reduce_topics()`.")
+  if (!is.character(docs)) rlang::abort("`docs` must be character.")
+  if (!(identical(nr_topics, "auto") ||
+        (is.numeric(nr_topics) && length(nr_topics) == 1L && is.finite(nr_topics) &&
+         nr_topics == as.integer(nr_topics) && nr_topics > 0))) {
+    rlang::abort("`nr_topics` must be a positive integer or \"auto\".")
+  }
   .need_py()
 
-  # Try: with docs (named args)
-  if (!is.null(docs)) {
+  docs <- unname(as.character(docs))
+  if (is.numeric(nr_topics)) nr_topics <- as.integer(nr_topics)
+
+  if (is.null(representation_model)) {
     res <- try(model$.py$reduce_topics(
-      unname(as.character(docs)),
+      docs,
+      nr_topics = nr_topics
+    ), silent = TRUE)
+  } else {
+    res <- try(model$.py$reduce_topics(
+      docs,
       nr_topics = nr_topics,
       representation_model = representation_model
     ), silent = TRUE)
-    if (!inherits(res, "try-error")) return(invisible(model))
   }
-
-  # Try: named without docs
-  res <- try(model$.py$reduce_topics(
-    nr_topics = nr_topics,
-    representation_model = representation_model
-  ), silent = TRUE)
-  if (!inherits(res, "try-error")) return(invisible(model))
-
-  # Fallbacks: positional
-  if (!is.null(docs)) {
-    res <- try(model$.py$reduce_topics(unname(as.character(docs))), silent = TRUE)
-    if (!inherits(res, "try-error")) return(invisible(model))
-  }
-  res <- try(model$.py$reduce_topics(nr_topics), silent = TRUE)
-  if (!inherits(res, "try-error")) return(invisible(model))
-
-  rlang::abort("Python `reduce_topics()` failed.")
+  if (inherits(res, "try-error")) rlang::abort("Python `reduce_topics()` failed.")
+  invisible(model)
 }
-
 
 #' Relabel topics
 #'

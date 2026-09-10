@@ -18,11 +18,11 @@ bertopic_reduce_topics(
 
 \item{representation_model}{Optional Python representation model.}
 
-\item{docs}{Optional character vector of training docs (used if required by backend).}
+\item{docs}{Character vector of training docs.}
 }
 \value{
 The input model (invisibly).
 }
 \description{
-Wrapper over Python \code{reduce_topics}, compatible with multiple signatures.
+Wrapper over Python \code{reduce_topics}.
 }
