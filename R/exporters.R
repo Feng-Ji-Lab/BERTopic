@@ -18,7 +18,12 @@ bertopic_as_document_topic_matrix <- function(model, sparse = TRUE, prefix = TRU
   M <- as.matrix(probs)
   storage.mode(M) <- "double"
   if (isTRUE(prefix)) {
-    colnames(M) <- paste0("topic_", seq_len(ncol(M)) - 1L)
+    ids <- tryCatch({
+      info <- reticulate::py_to_r(model$.py$get_topic_info())
+      as.integer(info$Topic)
+    }, error = function(e) integer())
+    if (length(ids) == ncol(M)) colnames(M) <- paste0("topic_", ids)
+    else colnames(M) <- paste0("topic_", seq_len(ncol(M)) - 1L)
   }
   if (isTRUE(sparse) && requireNamespace("Matrix", quietly = TRUE)) {
     return(Matrix::Matrix(M, sparse = TRUE))
