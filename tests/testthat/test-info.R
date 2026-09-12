@@ -25,14 +25,10 @@ test_that("document info, find_topics, representative docs work on sms_spam", {
     if (!reticulate::py_has_attr(m$.py, "get_representative_docs")) {
       skip("Backend does not expose get_representative_docs; skipping.")
     }
-    rd_try <- try(bertopic_get_representative_docs(m, valid_topics[1], top_n = 3), silent = TRUE)
-    if (inherits(rd_try, "try-error")) {
-      skip("get_representative_docs call failed in this backend/signature; skipping.")
-    } else {
-      expect_s3_class(rd_try, "tbl_df")
-      expect_true(all(c("rank", "document") %in% names(rd_try)))
-      expect_gte(nrow(rd_try), 1)
-    }
+    rd <- bertopic_get_representative_docs(m, valid_topics[1], top_n = 3)
+    expect_s3_class(rd, "tbl_df")
+    expect_true(all(c("rank", "document") %in% names(rd)))
+    expect_gte(nrow(rd), 1)
   } else {
     succeed("All topics are -1 (noise) in this subset; skipping representative docs check.")
   }
