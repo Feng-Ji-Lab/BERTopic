@@ -1,4 +1,4 @@
-﻿#' Update topic representations
+#' Update topic representations
 #'
 #' Call Python `BERTopic.update_topics()` to recompute topic representations.
 #'
@@ -84,14 +84,16 @@ bertopic_set_topic_labels <- function(model, labels) {
   if (is.character(labels) && !is.null(names(labels))) {
     ids <- suppressWarnings(as.integer(names(labels)))
     if (anyNA(ids)) rlang::abort("Names of `labels` must be integer topic ids.")
-    mapping <- reticulate::dict()\n    for (i in seq_along(ids)) mapping[[as.integer(ids[[i]])]] <- as.character(labels[[i]])
+    mapping <- reticulate::dict()
+    for (i in seq_along(ids)) mapping[[as.integer(ids[[i]])]] <- as.character(labels[[i]])
   } else if (is.data.frame(labels)) {
     if (!all(c("topic", "label") %in% names(labels))) {
       rlang::abort("Data frame `labels` must contain columns `topic` and `label`.")
     }
     ids <- suppressWarnings(as.integer(labels$topic))
     if (anyNA(ids)) rlang::abort("`labels$topic` must be integers.")
-    mapping <- reticulate::dict()\n    for (i in seq_along(ids)) mapping[[as.integer(ids[[i]])]] <- as.character(labels$label[[i]])
+    mapping <- reticulate::dict()
+    for (i in seq_along(ids)) mapping[[as.integer(ids[[i]])]] <- as.character(labels$label[[i]])
   } else {
     rlang::abort("`labels` must be a named character vector or data.frame(topic,label).")
   }
