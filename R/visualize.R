@@ -41,6 +41,7 @@ bertopic_visualize_topics <- function(model, file = NULL) {
       fig <- try(model$.py$visualize_barchart(), silent = TRUE)
     }
   if (inherits(fig, "try-error")) rlang::abort(sprintf("Python `visualize_topics()` failed: %s", conditionMessage(attr(fig, "condition"))))
+  .bertopic_fig_to_html(fig, file)
 }
 
 #' Visualize a topic barchart
