@@ -503,7 +503,7 @@ bertopic_self_check <- function() {
   out$roundtrip_ok <- !inherits(tr, "try-error") && !inherits(sv, "try-error") && !inherits(ld, "try-error")
   if (file.exists(tmp)) unlink(tmp)
 
-  # Success â€?only report OK
+  # Success ï¿½?only report OK
   out$details <- c(out$details, "OK")
   out
 }
