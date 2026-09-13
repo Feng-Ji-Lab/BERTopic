@@ -58,7 +58,12 @@ install_py_deps(envname = "r-bertopic", python_version = "3.10")
 ### 3) Bind the session (auto-selects the right route)
 ``` r
 use_bertopic("r-bertopic")
-```
+'
+
+### Supported Python BERTopic version
+
+The package currently targets Python `bertopic==0.16.0`. Both the Conda and virtualenv installation helpers pin this version. Other BERTopic versions are not guaranteed to work because Python method signatures and serialization behavior can change; test a version separately before using it and record the exact backend version with `bertopic_session_info()`.
+'```
 
 #### Self check & session info
 
