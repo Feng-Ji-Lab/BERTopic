@@ -262,7 +262,11 @@ install_py_deps_venv <- function(envname = "r-bertopic",
     "cloudpickle",
     "dill",
     "torch==2.1.*",
-    "sentence-transformers",
+    "transformers==4.47.0",
+    "accelerate==0.30.1",
+    "tokenizers==0.21.0",
+    "huggingface-hub>=0.23",
+    "sentence-transformers==2.7.0",
     "bertopic==0.16.0"
   ), ignore_installed = FALSE)
 
@@ -367,6 +371,7 @@ bertopic_session_info <- function() {
     version = cfg$version,
     numpy = cfg$numpy,
     numpy_version = cfg$numpy_version,
+    bertopic_version = tryCatch(as.character(reticulate::py_get_attr(reticulate::import("bertopic"), "__version__")), error = function(e) NA_character_),
     modules = data.frame(module = mods, available = unname(present), stringsAsFactors = FALSE)
   )
 }
@@ -498,7 +503,7 @@ bertopic_self_check <- function() {
   out$roundtrip_ok <- !inherits(tr, "try-error") && !inherits(sv, "try-error") && !inherits(ld, "try-error")
   if (file.exists(tmp)) unlink(tmp)
 
-  # Success â€” only report OK
+  # Success â€?only report OK
   out$details <- c(out$details, "OK")
   out
 }
