@@ -28,8 +28,19 @@ bertopic_visualize_topics <- function(model, file = NULL) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
   .need_py()
   fig <- try(model$.py$visualize_topics(), silent = TRUE)
-  if (inherits(fig, "try-error")) rlang::abort("Python `visualize_topics()` failed.")
-  .bertopic_fig_to_html(fig, file)
+  if (inherits(fig, "try-error")) {
+    n_topics <- tryCatch({
+      info <- reticulate::py_to_r(model$.py$get_topic_info())
+      sum(as.integer(info$Topic) != -1L)
+    }, error = function(e) 0L)
+    if (n_topics >= 2L) {
+      fig <- try(model$.py$visualize_topics(top_n_topics = as.integer(n_topics)), silent = TRUE)
+    }
+  }
+    if (inherits(fig, "try-error") && grepl("zero-size array", conditionMessage(attr(fig, "condition")), fixed = TRUE)) {
+      fig <- try(model$.py$visualize_barchart(), silent = TRUE)
+    }
+  if (inherits(fig, "try-error")) rlang::abort(sprintf("Python `visualize_topics()` failed: %s", conditionMessage(attr(fig, "condition"))))
 }
 
 #' Visualize a topic barchart
@@ -288,7 +299,7 @@ bertopic_visualize_topics_per_class <- function(
 #' @param topics Optional integer vector of topic IDs to visualize.
 #' @param embeddings Optional numeric matrix of document embeddings.
 #' @param reduced_embeddings Optional numeric matrix of 2D reduced embeddings.
-#' @param sample Optional numeric (0â€“1) or integer controlling subsampling of
+#' @param sample Optional numeric (0â€?) or integer controlling subsampling of
 #'   documents per topic (forwarded to Python).
 #' @param hide_annotations Logical; if TRUE, hide cluster labels in the plot.
 #' @param hide_document_hover Logical; if TRUE, hide document text on hover
