@@ -28,13 +28,9 @@ test_that("BERTopic visualization wrappers produce HTML files", {
   # 1) Topic map
   # ------------------------------------------------------------------
   f1 <- file.path(tempdir(), "viz_topics.html")
-  tryCatch({
-    expect_invisible(bertopic_visualize_topics(m, file = f1))
-    expect_true(file.exists(f1) && file.info(f1)$size > 0)
-  }, error = function(e) {
-    skip(paste("visualize_topics not supported in backend:", conditionMessage(e)))
-  })
-
+f1 <- file.path(tempdir(), "viz_topics.html")
+expect_invisible(bertopic_visualize_topics(m, file = f1))
+expect_true(file.exists(f1) && file.info(f1)$size > 0)
   # ------------------------------------------------------------------
   # 2) Topic barchart
   # ------------------------------------------------------------------
