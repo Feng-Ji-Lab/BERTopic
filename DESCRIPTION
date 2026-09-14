@@ -1,7 +1,7 @@
 Package: BERTopic
 Type: Package
 Title: Topic Modeling with 'BERTopic'
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person("Biying", "Zhou", email = "biying.zhou@psu.edu",
            role = c("aut", "cre"))
