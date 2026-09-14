@@ -5,6 +5,7 @@ if (requireNamespace("pkgload", quietly = TRUE)) {
 } else {
   stop("Install pkgload to run this benchmark")
 }
+cli <- commandArgs(trailingOnly = TRUE)
 get_arg <- function(flag, default) {
   i <- match(flag, cli)
   if (is.na(i) || i == length(cli)) return(default)
