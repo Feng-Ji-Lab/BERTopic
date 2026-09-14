@@ -1,16 +1,26 @@
 # Reproducible R-vs-Python BERTopic benchmark for release 0.1.1.
 options(stringsAsFactors = FALSE)
 if (requireNamespace("pkgload", quietly = TRUE)) pkgload::load_all(quiet = TRUE) else
-  stop("Install pkgload to run this benchmark")
+cli <- commandArgs(trailingOnly = TRUE)
+get_arg <- function(flag, default) {
+  i <- match(flag, cli)
+  if (is.na(i) || i == length(cli)) return(default)
+  cli[[i + 1L]]
+}
+output_dir <- get_arg("--output", "benchmark/results")
+seed <- as.integer(get_arg("--seed", "42"))
+embedding_dim <- as.integer(get_arg("--embedding-dim", "16"))
+max_docs <- as.integer(get_arg("--max-docs", "2247"))
+if (is.na(seed) || is.na(embedding_dim) || is.na(max_docs) || embedding_dim < 1L || max_docs < 1L) stop("Invalid --seed, --embedding-dim, or --max-docs")
 library(reticulate)
 data(sms_spam, package = "BERTopic")
-docs <- as.character(sms_spam$text)
-seed <- 42L
+docs <- as.character(sms_spam$text)[seq_len(min(max_docs, nrow(sms_spam)))]
+
 Sys.setenv(PYTHONHASHSEED = as.character(seed), OMP_NUM_THREADS = "1", MKL_NUM_THREADS = "1")
 set_bertopic_seed(seed)
 set.seed(seed)
 # Fixed embeddings make the two calls directly comparable.
-embeddings <- matrix(rnorm(length(docs) * 16L), nrow = length(docs), ncol = 16L)
+embeddings <- matrix(rnorm(length(docs) * embedding_dim), nrow = length(docs), ncol = embedding_dim)
 py_emb <- r_to_py(embeddings)
 
 measure <- function(expr) {
@@ -56,14 +66,14 @@ rows <- data.frame(
 )
 rows <- rbind(rows,
   data.frame(metric = c("r_fit_seconds", "python_fit_seconds"), value = c(r_run$elapsed_seconds, py_run$elapsed_seconds)))
-dir.create("benchmark/results", recursive = TRUE, showWarnings = FALSE)
-write.csv(rows, "benchmark/results/summary.csv", row.names = FALSE)
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+write.csv(rows, file.path(output_dir, "summary.csv"), row.names = FALSE)
 writeLines(c(
   paste("release:", as.character(utils::packageVersion("BERTopic"))),
   paste("seed:", seed),
   paste("documents:", length(docs)),
   paste("R:", R.version.string),
   capture.output(print(tryCatch(BERTopic::bertopic_session_info(), error = function(e) conditionMessage(e))))
-), "benchmark/results/environment.txt")
-saveRDS(list(r_topics = r_topics, py_topics = py_topics, r_info = r_info, py_info = py_info, r_probs = r_probs, py_probs = py_probs), "benchmark/results/raw.rds")
+), file.path(output_dir, "environment.txt"))
+saveRDS(list(r_topics = r_topics, py_topics = py_topics, r_info = r_info, py_info = py_info, r_probs = r_probs, py_probs = py_probs), file.path(output_dir, "raw.rds"))
 print(rows)
