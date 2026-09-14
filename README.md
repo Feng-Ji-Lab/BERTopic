@@ -66,7 +66,7 @@ use_bertopic("r-bertopic")
 
 The package currently targets Python `bertopic==0.16.0`. Both the Conda and virtualenv installation helpers pin this version. Other BERTopic versions are not guaranteed to work because Python method signatures and serialization behavior can change; test a version separately before using it and record the exact backend version with `bertopic_session_info()`.
 
-Windows validation (2026-09-13, R 4.4.1): the complete testthat suite passed 99 tests with 0 failures and 2 skips. The skips are backend capability cases for `set_embedding_model()` and `visualize_hierarchical_documents()`.
+Windows validation (2026-09-14, R 4.4.1, Python 3.10, BERTopic 0.17.4): the complete testthat suite passed with no failures or skips. This is compatibility evidence for that backend; the supported 0.16.0 release matrix still requires its final clean run.
 
 #### Self check & session info
 
