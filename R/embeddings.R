@@ -9,15 +9,44 @@
 #' @return The input model (invisibly).
 #' @export
 bertopic_set_embedding_model <- function(model, embedding_model) {
-  if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' object.")
+  if (!inherits(model, "bertopic_r")) rlang::abort("model must be a bertopic_r object.")
   .need_py()
-  ok <- TRUE
-  res <- try(model$.py$set_embedding_model(embedding_model = embedding_model), silent = TRUE)
-  if (inherits(res, "try-error")) ok <- FALSE
-  if (!ok) {
-    res <- try(model$.py$set_embedding_model(embedding_model), silent = TRUE)
-    if (inherits(res, "try-error")) rlang::abort("Python `set_embedding_model()` failed.")
+
+  backend_utils <- try(
+    reticulate::import("bertopic.backend._utils", convert = FALSE),
+    silent = TRUE
+  )
+  if (inherits(backend_utils, "try-error")) {
+    rlang::abort(paste0(
+      "Could not import Python embedding backend utilities: ",
+      conditionMessage(attr(backend_utils, "condition"))
+    ))
   }
+
+  language <- try(reticulate::py_get_attr(model$.py, "language"), silent = TRUE)
+  if (inherits(language, "try-error")) language <- NULL
+  selected <- try(
+    backend_utils$select_backend(embedding_model, language = language),
+    silent = TRUE
+  )
+  if (inherits(selected, "try-error")) {
+    rlang::abort(paste0(
+      "Python embedding backend selection failed: ",
+      conditionMessage(attr(selected, "condition"))
+    ))
+  }
+
+  assigned <- try(
+    reticulate::py_set_attr(model$.py, "embedding_model", selected),
+    silent = TRUE
+  )
+  if (inherits(assigned, "try-error")) {
+    rlang::abort(paste0(
+      "Could not set the Python embedding model: ",
+      conditionMessage(attr(assigned, "condition"))
+    ))
+  }
+
   invisible(model)
 }
 
