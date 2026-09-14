@@ -14,7 +14,8 @@ A named list containing paths, versions, and module availability:
 \item{version}{Python version string.}
 \item{numpy}{Whether NumPy is available.}
 \item{numpy_version}{NumPy version string (if available).}
-\item{modules}{A data.frame with availability for key modules.}
+\item{bertopic_version}{BERTopic version string (if available).}
+\item{modules}{A data.frame with availability and exact installed versions for key modules.}
 }
 }
 \description{

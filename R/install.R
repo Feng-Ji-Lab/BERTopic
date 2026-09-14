@@ -352,7 +352,8 @@ use_bertopic_virtualenv <- function(envname = "r-bertopic", required = TRUE) {
 #'   \item{version}{Python version string.}
 #'   \item{numpy}{Whether NumPy is available.}
 #'   \item{numpy_version}{NumPy version string (if available).}
-#'   \item{modules}{A data.frame with availability for key modules.}
+#'   \item{bertopic_version}{BERTopic version string (if available).}
+#'   \item{modules}{A data.frame with availability and exact installed versions for key modules.}
 #' }
 #' @examples
 #' \dontrun{
@@ -363,16 +364,46 @@ bertopic_session_info <- function() {
   if (!requireNamespace("reticulate", quietly = TRUE))
     stop("Package 'reticulate' is required.", call. = FALSE)
   cfg <- reticulate::py_config()
-  mods <- c("bertopic", "sentence_transformers", "torch", "umap", "hdbscan")
-  present <- vapply(mods, reticulate::py_module_available, logical(1))
+  modules <- c(
+    "bertopic", "sentence_transformers", "torch", "transformers",
+    "umap", "hdbscan", "numpy", "scipy", "sklearn", "pandas", "plotly"
+  )
+  distributions <- c(
+    bertopic = "bertopic",
+    sentence_transformers = "sentence-transformers",
+    torch = "torch",
+    transformers = "transformers",
+    umap = "umap-learn",
+    hdbscan = "hdbscan",
+    numpy = "numpy",
+    scipy = "scipy",
+    sklearn = "scikit-learn",
+    pandas = "pandas",
+    plotly = "plotly"
+  )
+  available <- vapply(modules, reticulate::py_module_available, logical(1))
+  metadata <- try(reticulate::import("importlib.metadata"), silent = TRUE)
+  versions <- vapply(modules, function(module) {
+    if (!available[[module]] || inherits(metadata, "try-error")) return(NA_character_)
+    tryCatch(
+      as.character(metadata$version(unname(distributions[[module]]))),
+      error = function(e) NA_character_
+    )
+  }, character(1))
+  module_info <- data.frame(
+    module = modules,
+    available = unname(available),
+    version = unname(versions),
+    stringsAsFactors = FALSE
+  )
   list(
     python = cfg$python,
     libpython = cfg$libpython,
     version = cfg$version,
-    numpy = cfg$numpy,
-    numpy_version = cfg$numpy_version,
-    bertopic_version = tryCatch(as.character(reticulate::py_get_attr(reticulate::import("bertopic"), "__version__")), error = function(e) NA_character_),
-    modules = data.frame(module = mods, available = unname(present), stringsAsFactors = FALSE)
+    numpy = unname(available[["numpy"]]),
+    numpy_version = unname(versions[["numpy"]]),
+    bertopic_version = unname(versions[["bertopic"]]),
+    modules = module_info
   )
 }
 
