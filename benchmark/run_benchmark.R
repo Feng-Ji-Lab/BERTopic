@@ -41,6 +41,10 @@ measure <- function(expr) {
 
 r_run <- measure(bertopic_fit(docs, embeddings = embeddings, calculate_probabilities = TRUE))
 r_model <- r_run$value
+reset_python_seed <- function() {
+  py_run_string(sprintf("import os, random; os.environ[\"PYTHONHASHSEED\"]=\"%d\"; random.seed(%d); import numpy as np; np.random.seed(%d)", seed, seed, seed))
+}
+reset_python_seed()
 .need_py()
 bt <- import("bertopic")
 py_run <- measure({
