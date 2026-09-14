@@ -301,7 +301,7 @@ bertopic_visualize_topics_per_class <- function(
 #' @param topics Optional integer vector of topic IDs to visualize.
 #' @param embeddings Optional numeric matrix of document embeddings.
 #' @param reduced_embeddings Optional numeric matrix of 2D reduced embeddings.
-#' @param sample Optional numeric (0ï¿?) or integer controlling subsampling of
+#' @param sample Optional numeric (0é”Ÿ?) or integer controlling subsampling of
 #'   documents per topic (forwarded to Python).
 #' @param hide_annotations Logical; if TRUE, hide cluster labels in the plot.
 #' @param hide_document_hover Logical; if TRUE, hide document text on hover
