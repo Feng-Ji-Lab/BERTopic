@@ -15,7 +15,12 @@ output_dir <- get_arg("--output", "benchmark/results")
 seed <- as.integer(get_arg("--seed", "42"))
 embedding_dim <- as.integer(get_arg("--embedding-dim", "16"))
 max_docs <- as.integer(get_arg("--max-docs", "2247"))
+python <- get_arg("--python", Sys.getenv("RETICULATE_PYTHON", unset = ""))
 if (is.na(seed) || is.na(embedding_dim) || is.na(max_docs) || embedding_dim < 1L || max_docs < 1L) stop("Invalid --seed, --embedding-dim, or --max-docs")
+if (nzchar(python)) {
+  python <- normalizePath(python, winslash = "/", mustWork = TRUE)
+  Sys.setenv(RETICULATE_PYTHON = python)
+}
 library(reticulate)
 data(sms_spam, package = "BERTopic")
 docs <- as.character(sms_spam$text)[seq_len(min(max_docs, nrow(sms_spam)))]
@@ -35,6 +40,7 @@ measure <- function(expr) {
 }
 
 .need_py()
+message("Python: ", py_config()$python)
 bt <- import("bertopic", convert = FALSE)
 umap <- import("umap", convert = FALSE)
 reset_python_seed <- function() {
@@ -71,12 +77,12 @@ py_run <- measure({
   list(model = model, result = result)
 })
 py_model <- py_run$value$model
-py_result <- py_run$value$result
+py_result <- py_to_r(py_run$value$result)
 
 r_topics <- as.integer(r_model$topics)
-py_topics <- as.integer(py_to_r(py_result[[1]]))
+py_topics <- as.integer(py_result[[1]])
 r_probs <- r_model$probs
-py_probs <- tryCatch(py_to_r(py_result[[2]]), error = function(e) NULL)
+py_probs <- py_result[[2]]
 r_info <- bertopic_topics(r_model)
 py_info <- as.data.frame(py_to_r(py_model$get_topic_info()))
 

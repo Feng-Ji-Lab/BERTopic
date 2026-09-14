@@ -49,21 +49,24 @@ library(BERTopic)
 Our package relies on **reticulate**. You do **not** need a system-wide Python; we can set up an isolated one.
 
 ### 2) Install Python deps (auto-selects Conda or virtualenv)
-``` r'
+
+```r
 library(reticulate)
 library(BERTopic)
 install_py_deps(envname = "r-bertopic", python_version = "3.10")
 ```
 
 ### 3) Bind the session (auto-selects the right route)
-``` r
+
+```r
 use_bertopic("r-bertopic")
-'
+```
 
 ### Supported Python BERTopic version
 
-The package currently targets Python `bertopic==0.16.0`. Both the Conda and virtualenv installation helpers pin this version. Other BERTopic versions are not guaranteed to work because Python method signatures and serialization behavior can change; test a version separately before using it and record the exact backend version with `bertopic_session_info()`.`r`n`r`nWindows validation (2026-09-13, R 4.4.1): the complete testthat suite passed 99 tests with 0 failures and 2 skips. The skips are backend capability cases for `set_embedding_model()` and `visualize_hierarchical_documents()`.
-'```
+The package currently targets Python `bertopic==0.16.0`. Both the Conda and virtualenv installation helpers pin this version. Other BERTopic versions are not guaranteed to work because Python method signatures and serialization behavior can change; test a version separately before using it and record the exact backend version with `bertopic_session_info()`.
+
+Windows validation (2026-09-13, R 4.4.1): the complete testthat suite passed 99 tests with 0 failures and 2 skips. The skips are backend capability cases for `set_embedding_model()` and `visualize_hierarchical_documents()`.
 
 #### Self check & session info
 
