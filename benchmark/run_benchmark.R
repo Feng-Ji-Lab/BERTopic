@@ -15,6 +15,11 @@ output_dir <- get_arg("--output", "benchmark/results")
 seed <- as.integer(get_arg("--seed", "42"))
 embedding_dim <- as.integer(get_arg("--embedding-dim", "16"))
 max_docs <- as.integer(get_arg("--max-docs", "2247"))
+python_path <- get_arg("--python", "")
+if (nzchar(python_path)) {
+  if (!file.exists(python_path)) stop("Python path does not exist: ", python_path)
+  Sys.setenv(RETICULATE_PYTHON = normalizePath(python_path, winslash = "/"))
+}
 if (is.na(seed) || is.na(embedding_dim) || is.na(max_docs) || embedding_dim < 1L || max_docs < 1L) stop("Invalid --seed, --embedding-dim, or --max-docs")
 library(reticulate)
 data(sms_spam, package = "BERTopic")
