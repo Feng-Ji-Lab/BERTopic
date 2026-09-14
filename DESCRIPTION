@@ -16,6 +16,7 @@ Imports:
     tibble,
     utils
 Suggests:
+    ggplot2,
     Matrix,
     htmltools,
     testthat (>= 3.1.0)

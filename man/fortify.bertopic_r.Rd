@@ -4,7 +4,7 @@
 \alias{fortify.bertopic_r}
 \title{Fortify method for ggplot2}
 \usage{
-fortify.bertopic_r(model, data, ...)
+\method{fortify}{bertopic_r}(model, data, ...)
 }
 \arguments{
 \item{model}{A "bertopic_r" model.}
