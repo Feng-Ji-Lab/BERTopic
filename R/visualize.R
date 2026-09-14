@@ -119,7 +119,7 @@ bertopic_visualize_documents <- function(model, docs = NULL, file = NULL) {
       model$.py$visualize_documents(unname(as.character(docs)))
     }
   }, silent = TRUE)
-  if (inherits(fig, "try-error")) rlang::abort("Python `visualize_documents()` failed.")
+  if (inherits(fig, "try-error")) rlang::abort(sprintf("Python `visualize_documents()` failed: %s", conditionMessage(attr(fig, "condition"))))
   .bertopic_fig_to_html(fig, file)
 }
 
@@ -300,7 +300,7 @@ bertopic_visualize_topics_per_class <- function(
 #' @param topics Optional integer vector of topic IDs to visualize.
 #' @param embeddings Optional numeric matrix of document embeddings.
 #' @param reduced_embeddings Optional numeric matrix of 2D reduced embeddings.
-#' @param sample Optional numeric (0â€?) or integer controlling subsampling of
+#' @param sample Optional numeric (0ï¿½?) or integer controlling subsampling of
 #'   documents per topic (forwarded to Python).
 #' @param hide_annotations Logical; if TRUE, hide cluster labels in the plot.
 #' @param hide_document_hover Logical; if TRUE, hide document text on hover

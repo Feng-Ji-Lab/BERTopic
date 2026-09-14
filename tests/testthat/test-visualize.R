@@ -88,7 +88,7 @@ expect_true(file.exists(f1) && file.info(f1)$size > 0)
   # 6) Documents
   # ------------------------------------------------------------------
   f6 <- file.path(tempdir(), "viz_documents.html")
-  sub_docs <- docs[seq_len(min(40L, length(docs)))]
+  sub_docs <- docs
   expect_invisible(
     bertopic_visualize_documents(m, docs = sub_docs, file = f6)
   )
