@@ -114,14 +114,10 @@ expect_true(file.exists(f1) && file.info(f1)$size > 0)
   }
 
   f7 <- file.path(tempdir(), "viz_distribution.html")
-  tryCatch({
-    expect_invisible(
-      bertopic_visualize_distribution(m, probs = prob_vec, file = f7)
-    )
-    expect_true(file.exists(f7) && file.info(f7)$size > 0)
-  }, error = function(e) {
-    skip(paste("visualize_distribution not supported in backend:", conditionMessage(e)))
-  })
+  expect_invisible(
+    bertopic_visualize_distribution(m, probs = prob_vec, file = f7)
+  )
+  expect_true(file.exists(f7) && file.info(f7)$size > 0)
 
   # ------------------------------------------------------------------
   # 8) Topics per class (requires topics_per_class from Python)

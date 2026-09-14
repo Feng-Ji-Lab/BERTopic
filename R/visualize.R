@@ -211,7 +211,7 @@ bertopic_visualize_distribution <- function(
 
   fig <- try(do.call(model$.py$visualize_distribution, args), silent = TRUE)
   if (inherits(fig, "try-error")) {
-    rlang::abort("Python `visualize_distribution()` failed.")
+    rlang::abort(sprintf("Python `visualize_distribution()` failed: %s", conditionMessage(attr(fig, "condition"))))
   }
 
   .bertopic_fig_to_html(fig, file)
