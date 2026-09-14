@@ -3,7 +3,7 @@ args <- commandArgs(trailingOnly = TRUE)
 out <- if (length(args)) args[[1]] else file.path("provenance", "session.txt")
 dir.create(dirname(out), recursive = TRUE, showWarnings = FALSE)
 repo <- normalizePath(".", winslash = "/", mustWork = TRUE)
-git <- function(...) tryCatch(system2("git", c(...), stdout = TRUE, stderr = TRUE), error = function(e) conditionMessage(e))
+git <- function(...) tryCatch(system2("git", c("-C", repo, ...), stdout = TRUE, stderr = TRUE), error = function(e) conditionMessage(e))
 lines <- c(
   paste("timestamp:", format(Sys.time(), tz = "UTC")),
   paste("git_commit:", paste(git("rev-parse", "HEAD"), collapse = " ")),

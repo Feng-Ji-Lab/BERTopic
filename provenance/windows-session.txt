@@ -1,4 +1,4 @@
-timestamp: 2026-09-14 03:28:47
+timestamp: 2026-09-14 03:29:00
 git_commit: fatal: detected dubious ownership in repository at 'C:/Users/zby15/Desktop/ss/BERTopic' 'C:/Users/zby15/Desktop/ss/BERTopic' is owned by: 	'S-1-5-32-544' but the current user is: 	'S-1-5-21-788592870-1151763967-1388673821-1001' To add an exception for this directory, call:  	git config --global --add safe.directory C:/Users/zby15/Desktop/ss/BERTopic
 git_status: fatal: detected dubious ownership in repository at 'C:/Users/zby15/Desktop/ss/BERTopic' | 'C:/Users/zby15/Desktop/ss/BERTopic' is owned by: | 	'S-1-5-32-544' | but the current user is: | 	'S-1-5-21-788592870-1151763967-1388673821-1001' | To add an exception for this directory, call: |  | 	git config --global --add safe.directory C:/Users/zby15/Desktop/ss/BERTopic
 os: Windows; 10 x64; build 26200; LAPTOP-V70SPRBI; x86-64; yyh; yyh; yyh
