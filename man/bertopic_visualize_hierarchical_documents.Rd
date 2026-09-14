@@ -37,7 +37,7 @@ bertopic_visualize_hierarchical_documents(
 
 \item{reduced_embeddings}{Optional numeric matrix of 2D reduced embeddings.}
 
-\item{sample}{Optional numeric (0–1) or integer controlling subsampling of
+\item{sample}{Optional numeric between 0 and 1, or an integer controlling
 documents per topic (forwarded to Python).}
 
 \item{hide_annotations}{Logical; if TRUE, hide cluster labels in the plot.}
@@ -68,4 +68,9 @@ normalized file path is returned invisibly.
 Wrapper around Python \code{BERTopic.visualize_hierarchical_documents()}.
 This function visualizes documents and their topics in 2D at different
 levels of a hierarchical topic structure.
+}
+\details{
+A one-row hierarchy has no intermediate hierarchy level.
+In that degenerate case, the function returns the standard document map
+because supported Python backends cannot construct a hierarchy slider.
 }

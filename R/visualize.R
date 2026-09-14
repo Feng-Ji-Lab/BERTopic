@@ -301,7 +301,7 @@ bertopic_visualize_topics_per_class <- function(
 #' @param topics Optional integer vector of topic IDs to visualize.
 #' @param embeddings Optional numeric matrix of document embeddings.
 #' @param reduced_embeddings Optional numeric matrix of 2D reduced embeddings.
-#' @param sample Optional numeric (0锟?) or integer controlling subsampling of
+#' @param sample Optional numeric between 0 and 1, or an integer controlling
 #'   documents per topic (forwarded to Python).
 #' @param hide_annotations Logical; if TRUE, hide cluster labels in the plot.
 #' @param hide_document_hover Logical; if TRUE, hide document text on hover
@@ -315,6 +315,10 @@ bertopic_visualize_topics_per_class <- function(
 #' @param width,height Optional integer figure width/height in pixels.
 #' @param file Optional HTML output path. If NULL, an `htmltools::HTML`
 #'   object is returned.
+#'
+#' @details A one-row hierarchy has no intermediate hierarchy level.
+#' In that degenerate case, the function returns the standard document map
+#' because supported Python backends cannot construct a hierarchy slider.
 #'
 #' @return If `file` is NULL, an `htmltools::HTML` object. Otherwise, the
 #'   normalized file path is returned invisibly.
@@ -346,6 +350,25 @@ bertopic_visualize_hierarchical_documents <- function(
   .need_py()
 
   level_scale <- match.arg(level_scale)
+  if (length(nr_levels) != 1L || is.na(nr_levels) || nr_levels < 1L) {
+    rlang::abort("nr_levels must be a positive integer.")
+  }
+  hierarchy_rows <- tryCatch(
+    if (is.data.frame(hierarchical_topics)) {
+      nrow(hierarchical_topics)
+    } else {
+      NROW(reticulate::py_to_r(hierarchical_topics))
+    },
+    error = function(e) NA_integer_
+  )
+  if (is.na(hierarchy_rows) || hierarchy_rows < 1L) {
+    rlang::abort("hierarchical_topics must contain at least one hierarchy row.")
+  }
+  if (hierarchy_rows == 1L) {
+    return(bertopic_visualize_documents(model, docs = docs, file = file))
+  }
+  nr_levels <- min(as.integer(nr_levels), as.integer(hierarchy_rows))
+
 
   args <- list(
     docs               = unname(as.character(docs)),
@@ -393,10 +416,15 @@ bertopic_visualize_hierarchical_documents <- function(
     args$height <- as.integer(height)
   }
 
-  fig <- try(do.call(model$.py$visualize_hierarchical_documents, args), silent = TRUE)
-  if (inherits(fig, "try-error")) {
-    rlang::abort("Python `visualize_hierarchical_documents()` failed.")
-  }
+  fig <- tryCatch(
+    do.call(model$.py$visualize_hierarchical_documents, args),
+    error = function(e) {
+      rlang::abort(paste0(
+        "Python visualize_hierarchical_documents() failed: ",
+        conditionMessage(e)
+      ))
+    }
+  )
 
   .bertopic_fig_to_html(fig, file)
 }
