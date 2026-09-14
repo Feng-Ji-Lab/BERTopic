@@ -1,52 +1,15 @@
 # Reproducible R-vs-Python BERTopic benchmark for release 0.1.1.
-options(stringsAsFactors = FALSE)
-if (requireNamespace("pkgload", quietly = TRUE)) {
-  pkgload::load_all(quiet = TRUE)
-} else {
-  stop("Install pkgload to run this benchmark")
-}
-cli <- commandArgs(trailingOnly = TRUE)
-get_arg <- function(flag, default) {
-  i <- match(flag, cli)
-  if (is.na(i) || i == length(cli)) return(default)
-  cli[[i + 1L]]
-}
-output_dir <- get_arg("--output", "benchmark/results")
-seed <- as.integer(get_arg("--seed", "42"))
-embedding_dim <- as.integer(get_arg("--embedding-dim", "16"))
-max_docs <- as.integer(get_arg("--max-docs", "2247"))
-python_path <- get_arg("--python", "")
-if (nzchar(python_path)) {
-  if (!file.exists(python_path)) stop("Python path does not exist: ", python_path)
-  Sys.setenv(RETICULATE_PYTHON = normalizePath(python_path, winslash = "/"))
-}
-if (is.na(seed) || is.na(embedding_dim) || is.na(max_docs) || embedding_dim < 1L || max_docs < 1L) stop("Invalid --seed, --embedding-dim, or --max-docs")
-library(reticulate)
-data(sms_spam, package = "BERTopic")
-docs <- as.character(sms_spam$text)[seq_len(min(max_docs, nrow(sms_spam)))]
-
-Sys.setenv(PYTHONHASHSEED = as.character(seed), OMP_NUM_THREADS = "1", MKL_NUM_THREADS = "1")
-set_bertopic_seed(seed)
-set.seed(seed)
-# Fixed embeddings make the two calls directly comparable.
-embeddings <- matrix(rnorm(length(docs) * embedding_dim), nrow = length(docs), ncol = embedding_dim)
-py_emb <- r_to_py(embeddings)
-
-measure <- function(expr) {
-  st <- proc.time()
-  value <- force(expr)
-  elapsed <- unname((proc.time() - st)[["elapsed"]])
-  list(value = value, elapsed_seconds = elapsed)
-}
-
-r_run <- measure(bertopic_fit(docs, embeddings = embeddings, calculate_probabilities = TRUE))
-r_model <- r_run$value
-reset_python_seed <- function() {
-  py_run_string(sprintf("import os, random; os.environ[\"PYTHONHASHSEED\"]=\"%d\"; random.seed(%d); import numpy as np; np.random.seed(%d)", seed, seed, seed))
-}
-reset_python_seed()
+print(rows)
+saveRDS(list(r_topics = r_topics, py_topics = py_topics, r_info = r_info, py_info = py_info, r_probs = r_probs, py_probs = py_probs), file.path(output_dir, "raw.rds"))
 .need_py()
 bt <- import("bertopic")
+reset_python_seed <- function() {
+  py_run_string(sprintf("import os, random; os.environ[\\"PYTHONHASHSEED\\"]=\\"%d\\"; random.seed(%d); import numpy as np; np.random.seed(%d)", seed, seed, seed))
+}
+reset_python_seed()
+r_run <- measure(bertopic_fit(docs, embeddings = embeddings, calculate_probabilities = TRUE))
+r_model <- r_run$value
+reset_python_seed()
 py_run <- measure({
   model <- bt$BERTopic(calculate_probabilities = TRUE)
   result <- model$fit_transform(docs, embeddings = py_emb)
