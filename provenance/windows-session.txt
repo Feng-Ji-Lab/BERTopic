@@ -1,0 +1,25 @@
+timestamp: 2026-09-14 03:28:47
+git_commit: fatal: detected dubious ownership in repository at 'C:/Users/zby15/Desktop/ss/BERTopic' 'C:/Users/zby15/Desktop/ss/BERTopic' is owned by: 	'S-1-5-32-544' but the current user is: 	'S-1-5-21-788592870-1151763967-1388673821-1001' To add an exception for this directory, call:  	git config --global --add safe.directory C:/Users/zby15/Desktop/ss/BERTopic
+git_status: fatal: detected dubious ownership in repository at 'C:/Users/zby15/Desktop/ss/BERTopic' | 'C:/Users/zby15/Desktop/ss/BERTopic' is owned by: | 	'S-1-5-32-544' | but the current user is: | 	'S-1-5-21-788592870-1151763967-1388673821-1001' | To add an exception for this directory, call: |  | 	git config --global --add safe.directory C:/Users/zby15/Desktop/ss/BERTopic
+os: Windows; 10 x64; build 26200; LAPTOP-V70SPRBI; x86-64; yyh; yyh; yyh
+R: R version 4.4.1 (2024-06-14 ucrt)
+R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 26200)
+
+Matrix products: default
+
+
+locale:
+[1] C
+system code page: 65001
+
+time zone: America/New_York
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+[1] compiler_4.4.1
+[1] "there is no package called 'BERTopic'"
