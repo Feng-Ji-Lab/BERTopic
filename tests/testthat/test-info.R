@@ -22,9 +22,6 @@ test_that("document info, find_topics, representative docs work on sms_spam", {
   ti <- bertopic_topics(m)
   valid_topics <- ti$Topic[ti$Topic != -1]
   if (length(valid_topics) > 0) {
-    if (!reticulate::py_has_attr(m$.py, "get_representative_docs")) {
-      skip("Backend does not expose get_representative_docs; skipping.")
-    }
     rd <- bertopic_get_representative_docs(m, valid_topics[1], top_n = 3)
     expect_s3_class(rd, "tbl_df")
     expect_true(all(c("rank", "document") %in% names(rd)))
