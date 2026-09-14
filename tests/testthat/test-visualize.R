@@ -89,14 +89,10 @@ expect_true(file.exists(f1) && file.info(f1)$size > 0)
   # ------------------------------------------------------------------
   f6 <- file.path(tempdir(), "viz_documents.html")
   sub_docs <- docs[seq_len(min(40L, length(docs)))]
-  tryCatch({
-    expect_invisible(
-      bertopic_visualize_documents(m, docs = sub_docs, file = f6)
-    )
-    expect_true(file.exists(f6) && file.info(f6)$size > 0)
-  }, error = function(e) {
-    skip(paste("visualize_documents not supported in backend:", conditionMessage(e)))
-  })
+  expect_invisible(
+    bertopic_visualize_documents(m, docs = sub_docs, file = f6)
+  )
+  expect_true(file.exists(f6) && file.info(f6)$size > 0)
 
   # ------------------------------------------------------------------
   # 7) Distribution (topic probabilities for a single document)
