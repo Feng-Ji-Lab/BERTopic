@@ -1,7 +1,10 @@
 # Reproducible R-vs-Python BERTopic benchmark for release 0.1.1.
 options(stringsAsFactors = FALSE)
-if (requireNamespace("pkgload", quietly = TRUE)) pkgload::load_all(quiet = TRUE) else
-cli <- commandArgs(trailingOnly = TRUE)
+if (requireNamespace("pkgload", quietly = TRUE)) {
+  pkgload::load_all(quiet = TRUE)
+} else {
+  stop("Install pkgload to run this benchmark")
+}
 get_arg <- function(flag, default) {
   i <- match(flag, cli)
   if (is.na(i) || i == length(cli)) return(default)
