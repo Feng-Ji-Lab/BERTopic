@@ -34,12 +34,39 @@ measure <- function(expr) {
   list(value = value, elapsed_seconds = elapsed)
 }
 
-r_run <- measure(bertopic_fit(docs, embeddings = embeddings, calculate_probabilities = TRUE))
-r_model <- r_run$value
 .need_py()
-bt <- import("bertopic")
+bt <- import("bertopic", convert = FALSE)
+umap <- import("umap", convert = FALSE)
+reset_python_seed <- function() {
+  py_run_string(sprintf(
+    'import os, random, numpy as np; os.environ["PYTHONHASHSEED"]="%d"; random.seed(%d); np.random.seed(%d)',
+    seed, seed, seed
+  ))
+}
+new_umap <- function() {
+  umap$UMAP(
+    n_neighbors = as.integer(15L),
+    n_components = as.integer(5L),
+    min_dist = 0,
+    metric = "cosine",
+    random_state = as.integer(seed)
+  )
+}
+
+reset_python_seed()
+r_run <- measure(bertopic_fit(
+  docs,
+  embeddings = embeddings,
+  calculate_probabilities = TRUE,
+  umap_model = new_umap()
+))
+r_model <- r_run$value
+reset_python_seed()
 py_run <- measure({
-  model <- bt$BERTopic(calculate_probabilities = TRUE)
+  model <- bt$BERTopic(
+    calculate_probabilities = TRUE,
+    umap_model = new_umap()
+  )
   result <- model$fit_transform(docs, embeddings = py_emb)
   list(model = model, result = result)
 })
