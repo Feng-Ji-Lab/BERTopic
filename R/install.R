@@ -134,8 +134,17 @@ install_py_deps_conda <- function(envname = "r-bertopic",
   }
 
   # 2) Install the shared, exact dependency specification via pip.
+  py_exec <- reticulate::conda_python(envname)
+  pip_available <- tryCatch(
+    identical(system2(py_exec, c("-m", "pip", "--version"),
+                      stdout = FALSE, stderr = FALSE), 0L),
+    error = function(e) FALSE
+  )
+  if (!pip_available) {
+    msg("[install_py_deps_conda] Installing pip...")
+    reticulate::conda_install(envname, "pip", channel = "conda-forge")
+  }
   msg("[install_py_deps_conda] Installing pinned Python packages...")
-  reticulate::conda_install(envname, "pip", channel = "conda-forge")
   reticulate::conda_install(
     envname,
     .bertopic_python_requirements(),
@@ -143,7 +152,6 @@ install_py_deps_conda <- function(envname = "r-bertopic",
   )
 
   # 3) Optional validation
-  py_exec <- reticulate::conda_python(envname)
   if (isTRUE(validate)) {
     msg("[install_py_deps_conda] Validating imports...")
     if (reticulate::py_available(initialize = FALSE)) {
