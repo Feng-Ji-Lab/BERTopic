@@ -44,7 +44,9 @@ def main():
     random.seed(args.seed)
     np.random.seed(args.seed)
     documents = pd.read_csv(args.documents, encoding="utf-8")["text"].astype(str).tolist()[: args.max_docs]
-    embeddings = np.load(args.embeddings, allow_pickle=False)[: len(documents)]
+    embeddings = np.asfortranarray(
+        np.asarray(np.load(args.embeddings, allow_pickle=False), dtype=np.float64)[: len(documents)]
+    )
     if embeddings.shape[0] != len(documents):
         raise ValueError("The frozen embedding rows do not match the selected documents")
 

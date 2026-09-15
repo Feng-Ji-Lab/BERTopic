@@ -72,7 +72,11 @@ def main():
             min_dist=0,
             metric="cosine",
             random_state=args.seed,
-        ).fit_transform(encoded).astype(np.float32)
+        ).fit_transform(encoded)
+
+    # Match the float type and column-major layout used by R/reticulate.
+    # HDBSCAN soft-membership calculations can be sensitive to array strides.
+    reduced = np.asfortranarray(reduced, dtype=np.float64)
 
     output_path = Path(args.output).resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -87,6 +91,8 @@ def main():
         "model_revision": args.model_revision or None,
         "source_dimensions": source_dimensions,
         "reduced_dimensions": int(reduced.shape[1]),
+        "embeddings_dtype": str(reduced.dtype),
+        "embeddings_memory_order": "F" if reduced.flags.f_contiguous else "C",
         "seed": args.seed,
         "embeddings_file": str(output_path),
         "embeddings_sha256": sha256_file(output_path),

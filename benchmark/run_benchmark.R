@@ -22,6 +22,9 @@ min_cluster_size <- as.integer(get_arg("--min-cluster-size", "10"))
 package_mode <- get_arg("--package-mode", "installed")
 expected_package_version <- get_arg("--expected-package-version", "0.1.1")
 expected_bertopic_version <- get_arg("--expected-bertopic-version", "0.16.0")
+release_tag <- get_arg("--release-tag", "v0.1.1")
+package_archive <- get_arg("--package-archive", if (package_mode == "installed") paste0("BERTopic_", expected_package_version, ".tar.gz") else "")
+if (nzchar(package_archive)) package_archive <- normalizePath(package_archive, winslash = "/", mustWork = TRUE)
 overwrite <- as_bool(get_arg("--overwrite", "false"))
 if (anyNA(c(repetitions, max_docs, seed, min_cluster_size)) || repetitions < 1L || max_docs < 1L || min_cluster_size < 2L) {
   stop("Invalid numeric benchmark parameter.", call. = FALSE)
@@ -67,6 +70,16 @@ run_process <- function(command, arguments, log_base) {
   }
   elapsed
 }
+provenance_args <- c(
+  shQuote(file.path(repo, "benchmark", "capture_provenance.py")),
+  "--repo", shQuote(repo), "--documents", shQuote(documents),
+  "--embeddings", shQuote(embeddings),
+  "--output", shQuote(file.path(output, "provenance.json")),
+  "--release-tag", shQuote(release_tag),
+  if (nzchar(package_archive)) c("--package-archive", shQuote(package_archive))
+)
+invisible(run_process(python, provenance_args, file.path(logs, "provenance")))
+
 worker_args <- function(worker_output) c(
   "--documents", shQuote(documents),
   "--embeddings", shQuote(embeddings),

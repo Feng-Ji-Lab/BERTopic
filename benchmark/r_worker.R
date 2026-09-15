@@ -87,7 +87,7 @@ metrics <- data.frame(
   metric = c(
     "fit_seconds", "peak_rss_bytes", "R_version", "package_version", "python_version",
     "bertopic_version", "numpy_version", "sklearn_version", "torch_version",
-    "transformers_version", "umap_version", "hdbscan_version", "documents", "topics", "outliers"
+    "transformers_version", "umap_version", "hdbscan_version", "package_library", "documents", "topics", "outliers"
   ),
   value = c(
     fit_seconds,
@@ -102,6 +102,7 @@ metrics <- data.frame(
     module_version("transformers"),
     module_version("umap"),
     module_version("hdbscan"),
+    find.package("BERTopic"),
     length(documents),
     nrow(info),
     sum(as.integer(model$topics) == -1L)
@@ -109,3 +110,4 @@ metrics <- data.frame(
   stringsAsFactors = FALSE
 )
 utils::write.csv(metrics, file.path(output, "metrics.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+writeLines(capture.output(sessionInfo()), file.path(output, "session_info.txt"), useBytes = TRUE)

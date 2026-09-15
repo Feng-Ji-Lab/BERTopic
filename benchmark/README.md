@@ -1,6 +1,6 @@
 # Windows fresh-process R-versus-Python benchmark
 
-The benchmark uses one frozen reduced-embedding array for both interfaces. Each repetition starts one new R process that calls the package and one new Python process that calls BERTopic directly. Odd repetitions run R first and even repetitions run Python first to balance persistent cache effects.
+The benchmark uses one frozen float64, column-major reduced-embedding array for both interfaces. Matching the memory layout matters because HDBSCAN soft-membership calculations can differ when numerically identical arrays have different strides. Each repetition starts one new R process that calls the package and one new Python process that calls BERTopic directly. Odd repetitions run R first and even repetitions run Python first to balance persistent cache effects.
 
 The timed model uses `BaseDimensionalityReduction()`, HDBSCAN with `min_cluster_size = 10` and `prediction_data = TRUE`, an English-stop-word `CountVectorizer`, and `calculate_probabilities = TRUE`. Component construction occurs before the fit timer. Cold-process time includes interpreter startup, imports, input loading, component construction, fitting, and result writing. Windows peak resident memory is read from `psutil`'s `peak_wset` for the complete worker process.
 
@@ -21,7 +21,7 @@ $python = "C:\Users\zby15\miniconda\envs\r-bertopic-016\python.exe"
   --reduced-dim 5
 ```
 
-The preparer requires an immutable Hugging Face model revision, encodes the documents once, reduces the 384-dimensional embeddings once with UMAP, and writes the frozen `.npy` array. Its adjacent `.manifest.json` records the full SHA-256 hashes of the source document file, the selected UTF-8 documents, and the array, together with its shape and preparation parameters. `--embedding-model synthetic` is available only for a quick harness smoke test; do not use it for manuscript results.
+The preparer requires an immutable Hugging Face model revision, encodes the documents once, reduces the 384-dimensional embeddings once with UMAP, and writes the frozen `.npy` array in float64 column-major form. Its adjacent `.manifest.json` records the dtype, memory order, and full SHA-256 hashes of the source document file, the selected UTF-8 documents, and the array, together with its shape and preparation parameters. `--embedding-model synthetic` is available only for a quick harness smoke test; do not use it for manuscript results.
 
 ## 2. Run the exact R release
 
@@ -45,6 +45,8 @@ Rscript benchmark/run_benchmark.R `
   --seed 42 `
   --min-cluster-size 10 `
   --package-mode installed `
+  --package-archive BERTopic_0.1.1.tar.gz `
+  --release-tag v0.1.1 `
   --expected-package-version 0.1.1 `
   --expected-bertopic-version 0.16.0
 ```
@@ -66,6 +68,8 @@ Use `--package-mode source` only while developing the runner. The default `insta
 | `--package-mode` | `installed` | Load the installed release or the source tree. |
 | `--expected-package-version` | `0.1.1` | Required R package version. |
 | `--expected-bertopic-version` | `0.16.0` | Required Python backend version. |
+| `--package-archive` | `BERTopic_0.1.1.tar.gz` in installed mode | Exact installed release source archive; SHA-256 is recorded. |
+| `--release-tag` | `v0.1.1` | Immutable package release tag whose commit is recorded. |
 | `--overwrite` | `false` | Replace an existing output directory. |
 
 ## Recorded outputs
@@ -74,7 +78,8 @@ Use `--package-mode source` only while developing the runner. The default `insta
 - `equivalence.csv`: per-pair comparisons of assignments, `Topic`/`Count`/`Name`, ordered term keys, c-TF-IDF weights at `1e-12`, probability dimensions, and probability values at `1e-12`.
 - `summary.csv`: medians and interquartile ranges for fit, cold-process, and peak-RSS measurements and their paired differences.
 - `manifest.txt`: source commit, expected versions, process settings, input manifest, and overall equivalence status.
-- `runs/`: raw assignments, topic metadata, top terms and weights, probability matrices, and exact environment metrics from every worker.
+- `provenance.json`: release/source and worker-script SHA-256 hashes, validated input manifest, full Python distribution versions, Windows/CPU/memory details, and inherited process settings.
+- `runs/`: raw assignments, topic metadata, top terms and weights, probability matrices, exact environment metrics, and R session information from every worker.
 - `logs/`: separate stdout and stderr logs from every fresh process.
 
 The files under `results-legacy-0.17.4/` came from the earlier single-process prototype. They are retained as compatibility history and must not be used as the final D2 results.
