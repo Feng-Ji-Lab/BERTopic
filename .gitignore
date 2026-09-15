@@ -7,3 +7,5 @@
 all_R_files.R
 /BERTopic.Rcheck/
 /BERTopic_*.tar.gz
+__pycache__/
+*.py[cod]
