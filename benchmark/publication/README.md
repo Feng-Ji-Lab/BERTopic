@@ -10,7 +10,7 @@ From a clean package checkout, using Python 3.10+:
 & $python benchmark/publication/build_archive.py --output ../bertopic-publication-0.1.2
 ~~~
 
-The builder archives the committed checkout and a Git bundle containing its HEAD and exact package tag. It verifies every retained archive hash against ZIP contents and writes a SHA-256 plus an upload inventory. It rejects existing output files. No machine-learning dependencies are needed for packaging.
+The builder archives the committed checkout and a Git bundle containing its HEAD and exact package tag. It builds with core.autocrlf=false and preserves the benchmark CSV bytes explicitly. It verifies the packaged CSV against the frozen input provenance and every retained archive hash against ZIP contents and writes a SHA-256 plus an upload inventory. It rejects existing output files. No machine-learning dependencies are needed for packaging.
 
 The ZIP contains exact package source/archives, packaged SMS input, frozen embeddings, full environments, all five-pair raw results, worked-example results, figures/HTML, manuscript source/PDF and author/metadata drafts. Earlier results are marked historical. Large model.pkl is intentionally omitted and can be regenerated with the recorded hash. E reconstruction remains deferred.
 

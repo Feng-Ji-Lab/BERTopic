@@ -45,7 +45,7 @@ def main():
     subprocess.run(["git", "-C", str(root), "bundle", "verify", str(bundle)],
                    check=True, stdout=subprocess.DEVNULL)
     prefix = "BERTopic-analysis-0.1.2/"
-    subprocess.run(["git", "-C", str(root), "archive", "--format=zip",
+    subprocess.run(["git", "-c", "core.autocrlf=false", "-C", str(root), "archive", "--format=zip",
                     "--prefix=" + prefix, "--output=" + str(archive), "HEAD"], check=True)
     stamp = datetime.datetime.fromtimestamp(int(git(root, "show", "-s", "--format=%ct", "HEAD")),
                                             datetime.timezone.utc).timetuple()[:6]
@@ -54,9 +54,13 @@ def main():
         item.compress_type = zipfile.ZIP_DEFLATED
         packed.writestr(item, bundle.read_bytes())
     expected = json.loads((root / "benchmark/archive_sha256.json").read_text(encoding="utf-8"))
+    provenance = json.loads((root / "benchmark/results/provenance.json").read_text(encoding="utf-8"))
     with zipfile.ZipFile(archive) as packed:
         if packed.testzip() is not None:
             raise ValueError("ZIP CRC verification failed")
+        documents_hash = hashlib.sha256(packed.read(prefix + "data/sms_spam.csv")).hexdigest()
+        if documents_hash != provenance["input_manifest"]["documents_file_sha256"]:
+            raise ValueError("Packaged CSV differs from the frozen benchmark input")
         for name, digest in expected.items():
             if hashlib.sha256(packed.read(prefix + name)).hexdigest() != digest:
                 raise ValueError("Packaged file mismatch: " + name)

@@ -13,13 +13,13 @@ Fill one or more roles per author in author_information.json, then have every au
 | Software | R wrapper, dependency tooling and analysis scripts | Pending |
 | Validation | Regression tests, clean Windows checks and restoration comparisons | Pending |
 | Visualization | Worked-example and benchmark figures/tables | Pending |
-| Writing ? original draft | Initial manuscript text | Pending |
-| Writing ? review & editing | Technical revision and editorial review | Pending |
+| Writing – original draft | Initial manuscript text | Pending |
+| Writing – review & editing | Technical revision and editorial review | Pending |
 | Supervision / project administration | Oversight and coordination, if applicable | Pending |
 
 Funding acquisition, investigation, resources and other roles should be included only where actually performed. The complete standardized role list is:
 
-Conceptualization, Data curation, Formal analysis, Funding acquisition, Investigation, Methodology, Project administration, Resources, Software, Supervision, Validation, Visualization, Writing ? original draft, Writing ? review & editing.
+Conceptualization, Data curation, Formal analysis, Funding acquisition, Investigation, Methodology, Project administration, Resources, Software, Supervision, Validation, Visualization, Writing – original draft, Writing – review & editing.
 
 Proposed final sentence structure (replace only after confirmation):
 

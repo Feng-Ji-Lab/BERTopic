@@ -46,6 +46,7 @@ def main():
         files = [p for folder in ["benchmark", "provenance"] for p in (root / folder).rglob("*")
                  if p.is_file() and p != manifest and p.name != "model.pkl"
                  and "__pycache__" not in p.parts and p.suffix != ".pyc"]
+        files.append(root / "data/sms_spam.csv")
         hashes = {p.relative_to(root).as_posix(): digest(p) for p in sorted(files)}
         manifest.write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
     hashes = json.loads(manifest.read_text(encoding="utf-8"))

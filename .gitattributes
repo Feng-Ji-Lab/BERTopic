@@ -2,3 +2,6 @@
 # Preserve exact execution/archive bytes for recorded SHA-256 hashes.
 /benchmark/** -text whitespace=cr-at-eol
 /provenance/** -text whitespace=cr-at-eol
+
+# Preserve the exact packaged CSV bytes used by the frozen benchmark manifest.
+/data/sms_spam.csv -text whitespace=cr-at-eol
