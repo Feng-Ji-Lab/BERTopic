@@ -22,6 +22,7 @@ main <- function() {
              OMP_NUM_THREADS = "1", MKL_NUM_THREADS = "1",
              OPENBLAS_NUM_THREADS = "1", NUMEXPR_NUM_THREADS = "1")
   for (pkg in c("Matrix", "jsonlite")) if (!requireNamespace(pkg, quietly = TRUE)) stop("Install the R package ", pkg, " before running the example")
+  source("benchmark/example_io.R", local = TRUE)
   library(BERTopic)
   library(reticulate)
   if (packageVersion("BERTopic") != "0.1.1") stop("The worked example requires installed BERTopic 0.1.1")
@@ -32,7 +33,7 @@ main <- function() {
   data("sms_spam", package = "BERTopic")
   sms_spam <- head(sms_spam, max_docs)
   docs <- as.character(sms_spam$text)
-  write.csv(sms_spam, file.path(output, "documents.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+  write_example_csv(sms_spam, file.path(output, "documents.csv"), row.names = FALSE, fileEncoding = "UTF-8")
   cat("Documents:", length(docs), "\n")
   print(table(sms_spam$label))
   chars <- nchar(docs, type = "chars")
@@ -44,7 +45,7 @@ main <- function() {
     q3 = c(quantile(chars, .75), quantile(words, .75)),
     minimum = c(min(chars), min(words)), maximum = c(max(chars), max(words))
   )
-  write.csv(descriptions, file.path(output, "data_summary.csv"), row.names = FALSE)
+  write_example_csv(descriptions, file.path(output, "data_summary.csv"), row.names = FALSE)
   set_bertopic_seed(seed)
   set.seed(seed)
   st <- import("sentence_transformers", convert = FALSE)
@@ -58,32 +59,32 @@ main <- function() {
   print(model)
   info <- bertopic_topics(model)
   print(head(info, 8L))
-  write.csv(info, file.path(output, "topic_info.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+  write_example_csv(info, file.path(output, "topic_info.csv"), row.names = FALSE, fileEncoding = "UTF-8")
   valid <- info$Topic[info$Topic != -1L]
   if (length(valid) < 3L) stop("Worked example requires at least three non-outlier topics for its visualizations")
   terms <- do.call(rbind, lapply(info$Topic, function(id) {
     value <- as.data.frame(bertopic_topic_terms(model, id, top_n = 10L))
     data.frame(Topic = id, Rank = seq_len(nrow(value)), value)
   }))
-  write.csv(terms, file.path(output, "topic_terms.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+  write_example_csv(terms, file.path(output, "topic_terms.csv"), row.names = FALSE, fileEncoding = "UTF-8")
   document_info <- bertopic_get_document_info(model, docs)
-  write.csv(document_info, file.path(output, "document_info.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+  write_example_csv(document_info, file.path(output, "document_info.csv"), row.names = FALSE, fileEncoding = "UTF-8")
   query <- bertopic_find_topics(model, "free subscription message", top_n = 5L)
   print(query)
-  write.csv(query, file.path(output, "query_topics.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+  write_example_csv(query, file.path(output, "query_topics.csv"), row.names = FALSE, fileEncoding = "UTF-8")
   representatives <- bertopic_get_representative_docs(model, valid[1L], top_n = 3L)
   print(representatives)
-  write.csv(representatives, file.path(output, "representative_documents.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+  write_example_csv(representatives, file.path(output, "representative_documents.csv"), row.names = FALSE, fileEncoding = "UTF-8")
   new_docs <- c("Love you so much, see you tonight.", "Free subscription! Reply STOP to unsubscribe.")
   predictions <- predict(model, new_docs, type = "both")
   print(predictions$topics)
-  write.csv(data.frame(text = new_docs, Topic = predictions$topics), file.path(output, "predictions.csv"), row.names = FALSE)
+  write_example_csv(data.frame(text = new_docs, Topic = predictions$topics), file.path(output, "predictions.csv"), row.names = FALSE)
   write.table(as.matrix(predictions$probs), file.path(output, "prediction_probabilities.csv"), sep = ",",
               row.names = FALSE, col.names = FALSE, quote = FALSE)
   matrix <- bertopic_as_document_topic_matrix(model, sparse = FALSE, prefix = TRUE)
   sparse <- bertopic_as_document_topic_matrix(model, sparse = TRUE, prefix = TRUE)
   stopifnot(nrow(matrix) == length(docs), isTRUE(all.equal(matrix, as.matrix(sparse), tolerance = 1e-12)))
-  write.csv(matrix, file.path(output, "document_topic_matrix.csv"), row.names = FALSE)
+  write_example_csv(matrix, file.path(output, "document_topic_matrix.csv"), row.names = FALSE)
   cat("Document-topic matrix:", dim(matrix), "\n")
   bertopic_visualize_topics(model, file = file.path(output, "viz_topics_wrapper.html"))
   bertopic_visualize_heatmap(model, file = file.path(output, "viz_heatmap_wrapper.html"))
@@ -114,7 +115,7 @@ main <- function() {
   topic_vectors <- embeddings[index, , drop = FALSE]
   norms <- sqrt(rowSums(topic_vectors^2))
   similarity <- tcrossprod(topic_vectors / pmax(norms, .Machine$double.eps))
-  write.csv(similarity, file.path(output, "topic_similarity.csv"), row.names = FALSE)
+  write_example_csv(similarity, file.path(output, "topic_similarity.csv"), row.names = FALSE)
   render("topic_similarity", function() {
     par(mar = c(4, 4, 3, 1))
     n <- nrow(similarity)
@@ -127,7 +128,7 @@ main <- function() {
   }, width = 7, height = 6)
   bertopic_update_topics(model, docs)
   updated_info <- bertopic_topics(model)
-  write.csv(updated_info, file.path(output, "updated_topic_info.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+  write_example_csv(updated_info, file.path(output, "updated_topic_info.csv"), row.names = FALSE, fileEncoding = "UTF-8")
   updated_predictions <- predict(model, new_docs, type = "both")
   # Match the manuscript's lightweight save/load metadata check.
   lightweight_path <- file.path(output, "model-safetensors")
@@ -152,7 +153,7 @@ main <- function() {
                equal_numeric(updated_predictions$probs, restored_predictions$probs))
   )
   print(checks)
-  write.csv(checks, file.path(output, "restoration_checks.csv"), row.names = FALSE)
+  write_example_csv(checks, file.path(output, "restoration_checks.csv"), row.names = FALSE)
   writeLines(capture.output(sessionInfo()), file.path(output, "r_session_info.txt"), useBytes = TRUE)
   hashlib <- import("hashlib", convert = FALSE)
   pathlib <- import("pathlib", convert = FALSE)
@@ -165,6 +166,7 @@ main <- function() {
     package_library = find.package("BERTopic"), package_archive = archive,
     package_archive_sha256 = sha(archive),
     script_sha256 = sha(normalizePath("benchmark/run_example.R", winslash = "/")),
+    helper_sha256 = sha(normalizePath("benchmark/example_io.R", winslash = "/")),
     python = python, backend = backend, seed = seed, model_revision = revision,
     documents = length(docs), umap = list(n_neighbors = 15L, n_components = 5L, min_dist = 0, metric = "cosine", random_state = seed),
     artifact_sha256 = setNames(lapply(files, sha), substring(files, nchar(output) + 2L)),

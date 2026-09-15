@@ -109,3 +109,9 @@ Rscript benchmark/run_example.R `
 This script requires the R packages `Matrix` and `jsonlite`. It uses the manuscript's complete embedding/reduction pipeline, while the controlled benchmark uses the frozen array and an English-stop-word vectorizer. Their topic counts need not match. It saves the full printed output, descriptive statistics, metadata, terms, query/prediction results, matrix exports, API-produced HTML, self-contained HTML, Plotly JSON, and static PNG/PDF figures from its own model.
 
 The lightweight safetensors restoration check verifies topic metadata. The additional full pickle round trip verifies cached assignments/strengths and post-load predictions at `1e-12`. The script stops on failed operations or restoration checks. A manifest records the archive/script and generated artifact hashes. The large generated `model.pkl` is excluded from Git and can be recreated with this script.
+
+The retained exact source archive is also available at provenance/releases/BERTopic_0.1.1.tar.gz; pass that path explicitly with --package-archive when the root archive is absent. Full topic metadata contain list columns; the example CSV serializer preserves these as JSON-valued cells. Its regression case can be run with:
+
+~~~powershell
+Rscript benchmark/test_example_io.R
+~~~
