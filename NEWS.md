@@ -1,3 +1,9 @@
+# BERTopic 0.1.2
+
+- Fixed default safetensors/PyTorch saving on the supported Windows BERTopic 0.16.0 backend without adding an unwanted embedding-model reference.
+- Mapped R's pt serialization to Python's pytorch format and forwarded explicit Hugging Face model references unchanged.
+- Preserved original save failures instead of retrying pickle, and protected existing destinations unless overwrite is explicit.
+- Added regression tests for lightweight weight files, metadata restoration, reference handling, and original-error propagation.
 # BERTopic 0.1.1
 
 ## Correctness

@@ -15,20 +15,23 @@ bertopic_save(
 \arguments{
 \item{model}{A "bertopic_r" model.}
 
-\item{path}{Destination path (file or directory, as required by BERTopic).}
+\item{path}{Destination file or directory.}
 
-\item{serialization}{One of "pickle", "safetensors", or "pt". Default "pickle".}
+\item{serialization}{One of "pickle", "safetensors", or "pt". "pt" is
+forwarded as Python's "pytorch" serialization.}
 
-\item{save_embedding_model}{Logical; whether to include the embedding model. Default FALSE.}
+\item{save_embedding_model}{Logical; whether to include the embedding model
+for pickle or its reference for lightweight formats. Default FALSE.
+For lightweight formats, a nonempty Hugging Face model identifier may
+also be supplied. FALSE leaves no embedding-model reference in the bundle.}
 
-\item{overwrite}{Logical; if TRUE and the target exists, it will be replaced.}
+\item{overwrite}{Logical; whether an existing destination may be replaced.}
 }
 \value{
-Invisibly returns the normalized path.
+Invisibly returns the normalized path. Backend errors are propagated
+without retrying a different serialization.
 }
 \description{
-Save a fitted BERTopic model to disk. Depending on the serialization method,
-this may produce either a single file (e.g., *.pkl / *.pt / *.safetensors)
-or a directory bundle. The function does not pre-create the target path; it
-only ensures the parent directory exists and lets BERTopic decide the layout.
+Pickle saves a file containing the fitted components. Safetensors and
+PyTorch save a lightweight directory without the reducer or clusterer.
 }

@@ -29,7 +29,7 @@ Build and install from a clean checkout of the release tag that will be cited, t
 
 ```powershell
 R.exe CMD build .
-R.exe CMD INSTALL BERTopic_0.1.1.tar.gz
+R.exe CMD INSTALL BERTopic_0.1.2.tar.gz
 ```
 
 Then run five paired fresh processes:
@@ -45,9 +45,9 @@ Rscript benchmark/run_benchmark.R `
   --seed 42 `
   --min-cluster-size 10 `
   --package-mode installed `
-  --package-archive BERTopic_0.1.1.tar.gz `
-  --release-tag v0.1.1 `
-  --expected-package-version 0.1.1 `
+  --package-archive BERTopic_0.1.2.tar.gz `
+  --release-tag v0.1.2 `
+  --expected-package-version 0.1.2 `
   --expected-bertopic-version 0.16.0
 ```
 
@@ -66,10 +66,10 @@ Use `--package-mode source` only while developing the runner. The default `insta
 | `--seed` | `42` | R, Python, NumPy, and process hash seed. |
 | `--min-cluster-size` | `10` | HDBSCAN minimum cluster size. |
 | `--package-mode` | `installed` | Load the installed release or the source tree. |
-| `--expected-package-version` | `0.1.1` | Required R package version. |
+| `--expected-package-version` | `0.1.2` | Required R package version. |
 | `--expected-bertopic-version` | `0.16.0` | Required Python backend version. |
-| `--package-archive` | `BERTopic_0.1.1.tar.gz` in installed mode | Exact installed release source archive; SHA-256 is recorded. |
-| `--release-tag` | `v0.1.1` | Immutable package release tag whose commit is recorded. |
+| `--package-archive` | `BERTopic_0.1.2.tar.gz` in installed mode | Exact installed release source archive; SHA-256 is recorded. |
+| `--release-tag` | `v0.1.2` | Immutable package release tag whose commit is recorded. |
 | `--overwrite` | `false` | Replace an existing output directory. |
 
 ## Recorded outputs
@@ -94,12 +94,12 @@ Rscript benchmark/export_artifacts.R --results benchmark/results
 
 The exporter refuses results whose equivalence checks failed. It writes its artifacts under `benchmark/results/artifacts`.
 
-Run the complete manuscript worked example separately, after the timed benchmark has finished, with the same installed 0.1.1 package and Python 0.16.0 environment:
+Run the complete manuscript worked example separately, after the timed benchmark has finished, with the same installed 0.1.2 package and Python 0.16.0 environment:
 
 ```powershell
 Rscript benchmark/run_example.R `
   --python $python `
-  --package-archive BERTopic_0.1.1.tar.gz `
+  --package-archive BERTopic_0.1.2.tar.gz `
   --output benchmark/example-results `
   --seed 42 `
   --max-docs 2247 `
@@ -110,8 +110,10 @@ This script requires the R packages `Matrix` and `jsonlite`. It uses the manuscr
 
 The lightweight safetensors restoration check verifies topic metadata. The additional full pickle round trip verifies cached assignments/strengths and post-load predictions at `1e-12`. The script stops on failed operations or restoration checks. A manifest records the archive/script and generated artifact hashes. The large generated `model.pkl` is excluded from Git and can be recreated with this script.
 
-The retained exact source archive is also available at provenance/releases/BERTopic_0.1.1.tar.gz; pass that path explicitly with --package-archive when the root archive is absent. Full topic metadata contain list columns; the example CSV serializer preserves these as JSON-valued cells. Its regression case can be run with:
+The retained exact source archive is also available at provenance/releases/BERTopic_0.1.2.tar.gz; pass that path explicitly with --package-archive when the root archive is absent. Full topic metadata contain list columns; the example CSV serializer preserves these as JSON-valued cells. Its regression case can be run with:
 
 ~~~powershell
 Rscript benchmark/test_example_io.R
 ~~~
+
+The validated five-pair Windows 0.1.1 outputs are retained under results-windows-0.1.1/. Its full worked example exposed the lightweight-save bug fixed in 0.1.2; the final manuscript should use the new 0.1.2 rerun.

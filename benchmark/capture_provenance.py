@@ -24,7 +24,7 @@ def main():
     parser.add_argument("--embeddings", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--package-archive", default="")
-    parser.add_argument("--release-tag", default="v0.1.1")
+    parser.add_argument("--release-tag", default="v0.1.2")
     args = parser.parse_args()
     import numpy as np
     import psutil
