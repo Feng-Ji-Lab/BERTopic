@@ -500,7 +500,7 @@ Matching results in the controlled comparison and reproducibility across indepen
 
 \subsection{Software availability}
 
-The evaluation used the locally versioned \pkg{BERTopic} 0.1.2 source archive. Development source and issue tracking are at \url{https://github.com/Feng-Ji-Lab/BERTopic}; the CRAN project page is \url{https://CRAN.R-project.org/package=BERTopic}. The exact tested source and checksum are retained with the analysis materials. Public versioned release publication and an archive DOI remain pending. The R interface is MIT-licensed; dependencies retain their respective licenses.
+The evaluation used the versioned \pkg{BERTopic} 0.1.2 source archive. Development source and issue tracking are at \url{https://github.com/Feng-Ji-Lab/BERTopic}; the CRAN project page is \url{https://CRAN.R-project.org/package=BERTopic}. The exact tested source and checksum are retained with the analysis materials. The tested tag is public at \url{https://github.com/Feng-Ji-Lab/BERTopic/tree/v0.1.2}, and the exact installed archive is \href{https://github.com/Feng-Ji-Lab/BERTopic/raw/64907e737025fe456d3673afcf0f467df4deb20d/provenance/releases/BERTopic_0.1.2.tar.gz}{retained publicly at an immutable commit}. An archive DOI remains pending. The R interface is MIT-licensed; dependencies retain their respective licenses.
 
 \subsection{One-time backend setup}
 
@@ -559,7 +559,7 @@ The controlled benchmark covers one Windows configuration, one short-text corpus
 
 The substantive limits of unsupervised topic modeling are unchanged by the interface. A coherent list of top words does not establish that a topic is a reliable psychological construct. Short documents near cluster boundaries may move between a substantive topic and the outlier class under modest specification changes, and HDBSCAN-derived membership strengths are not automatically calibrated probabilities of theoretically defined categories. Behavioral applications should justify the unit of analysis and embedding model, report preprocessing and component choices, inspect multiple representative documents, assess stability across reasonable specifications, and validate any topic-derived measure against its intended use. Evaluations of behavioral text-mining methods similarly emphasize that convenient model output cannot substitute for task-specific validation against human judgments or other relevant criteria \citep{macanovic2024systematic}.
 
-In its current form, \pkg{BERTopic} provides an R-oriented access layer and preserves the selected outputs tested here. The contribution is interface design, workflow documentation, and bounded input--output validation. \todo{Before submission, publish the tested versioned release, supply the archive DOI, and complete outstanding dataset-provenance and author-information fields.}
+In its current form, \pkg{BERTopic} provides an R-oriented access layer and preserves the selected outputs tested here. The contribution is interface design, workflow documentation, and bounded input--output validation. \todo{Before submission, supply the archive DOI, and complete outstanding dataset-provenance and author-information fields.}
 
 \section*{Declarations}
 
@@ -575,7 +575,7 @@ In its current form, \pkg{BERTopic} provides an R-oriented access layer and pres
 
 \textbf{Availability of data and materials.} The demonstration data are distributed in the \pkg{BERTopic} R package. \todo{Insert the archival OSF/Zenodo URL containing the exact benchmark inputs or a deterministic generation script, outputs, figures, and manuscript materials.}
 
-\textbf{Code availability.} Development source is at \url{https://github.com/Feng-Ji-Lab/BERTopic}. The benchmark used version 0.1.2, tag \fcode{v0.1.2}, commit \fcode{faee106}, and the retained source archive checksum. \todo{Insert a public versioned release and DOI for the exact source and analysis scripts.}
+\textbf{Code availability.} Development source is at \url{https://github.com/Feng-Ji-Lab/BERTopic}. The benchmark used version 0.1.2, tag \fcode{v0.1.2}, commit \fcode{faee106}, and the retained source archive checksum. \todo{Insert the published version-specific archive DOI for the exact source and analysis scripts.}
 
 \textbf{Author contributions.} \todo{Complete an author-approved CRediT contribution statement. Ensure that manuscript authorship and package-development contributions are documented consistently.}
 

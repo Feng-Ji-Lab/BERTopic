@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "title": "BERTopic for R 0.1.2: validated Windows software and analysis materials",
+    "upload_type": "software",
+    "version": "0.1.2",
+    "access_right": "open",
+    "description": "Corrected R interface, exact source archive, five paired fresh-process R/Python runs, full SMS worked example, resolved Windows environment, raw outputs, figures and manuscript. BERTopic 0.16.0 / Python 3.10.21 only. Historical SMS ham-selection reconstruction (E) is deferred; this archive preserves the actual packaged input and its hash.",
+    "keywords": [
+      "BERTopic",
+      "R",
+      "Python",
+      "reticulate",
+      "reproducibility",
+      "Windows"
+    ],
+    "related_identifiers": [
+      {
+        "identifier": "https://github.com/Feng-Ji-Lab/BERTopic/tree/v0.1.2",
+        "relation": "isSupplementTo",
+        "scheme": "url"
+      }
+    ]
+  }
+}

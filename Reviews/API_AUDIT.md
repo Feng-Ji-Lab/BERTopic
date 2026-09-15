@@ -1,6 +1,6 @@
 # Package/API audit for manuscript revision
 
-Scope: package 0.1.2, commit faee106360389a8e75199893f6e8c68c28876c8d, local tag v0.1.2, installed from the retained source archive. Validation covers Windows, Python 3.10.21, BERTopic 0.16.0. Five paired runs and the complete worked example have finished; macOS/Linux are outside the requested scope.
+Scope: package 0.1.2, commit faee106360389a8e75199893f6e8c68c28876c8d, public source tag v0.1.2, installed from the retained source archive. Validation covers Windows, Python 3.10.21, BERTopic 0.16.0. Five paired runs and the complete worked example have finished; macOS/Linux are outside the requested scope.
 
 | Manuscript claim | Code-level finding | Evidence | Status / manuscript action |
 | --- | --- | --- | --- |
@@ -34,4 +34,4 @@ Scope: package 0.1.2, commit faee106360389a8e75199893f6e8c68c28876c8d, local tag
 
 ## Remaining items
 
-D1 has a validated local tag/archive; public release publication remains pending. D3 local materials are retained, but the public archive/DOI is F1. E is deferred at the user's request; historical SMS selection is not established or changed. F2/F3 require author-provided affiliations, declarations and contribution facts. This audit does not claim those items complete.
+D1 has a validated public source tag and exact installed archive on GitHub. F1 upload packaging and Windows/offline reproduction entrypoints are prepared; Zenodo/OSF account access, archive creators/license confirmation and a published DOI remain pending. D3 local materials are retained, but the public archive/DOI is F1. E is deferred at the user's request; historical SMS selection is not established or changed. F2/F3 require author-provided affiliations, declarations and contribution facts. This audit does not claim those items complete.

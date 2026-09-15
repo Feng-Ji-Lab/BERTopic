@@ -1,0 +1,46 @@
+{
+  "source": "Names/order and affiliation numbers from the manuscript; package creator from DESCRIPTION. Remaining values require author confirmation.",
+  "affiliations": {
+    "1": null,
+    "2": null
+  },
+  "corresponding_author": {
+    "name": null,
+    "postal_address": null,
+    "telephone": null,
+    "email": null
+  },
+  "funding_statement": null,
+  "competing_interests_statement": null,
+  "authors": [
+    {
+      "name": "Biying Zhou",
+      "affiliation_id": 1,
+      "credit_roles": [],
+      "confirmed": false
+    },
+    {
+      "name": "Yuhao Yuan",
+      "affiliation_id": 1,
+      "credit_roles": [],
+      "confirmed": false
+    },
+    {
+      "name": "Nanxin Deng",
+      "affiliation_id": 2,
+      "credit_roles": [],
+      "confirmed": false
+    },
+    {
+      "name": "Feng Ji",
+      "affiliation_id": 1,
+      "credit_roles": [],
+      "confirmed": false
+    }
+  ],
+  "package_creator": {
+    "name": "Biying Zhou",
+    "email": "biying.zhou@psu.edu",
+    "source": "DESCRIPTION Authors@R"
+  }
+}

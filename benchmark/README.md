@@ -118,6 +118,8 @@ Rscript benchmark/test_example_io.R
 
 The validated five-pair Windows 0.1.1 outputs are retained under results-windows-0.1.1/. Its full worked example exposed the lightweight-save bug fixed in 0.1.2; the final manuscript should use the new 0.1.2 rerun.
 
-The final 0.1.2 run is retained in results/ and example-results/. Its synchronized manuscript source, bibliography, PDF and successful build logs are in manuscript-0.1.2/. The package check reports 159 passes, no failures/warnings/skips, and one existing UTF-8 data NOTE. Public release/DOI and E remain pending.
+The final 0.1.2 run is retained in results/ and example-results/. Its synchronized manuscript source, bibliography, PDF and successful build logs are in manuscript-0.1.2/. The package check reports 159 passes, no failures/warnings/skips, and one existing UTF-8 data NOTE. The source tag/archive are public on GitHub; DOI and E remain pending.
 
 Validate the retained archive using Python 3.10+ without loading machine-learning packages: python benchmark/verify_archive.py. Hashes cover retained inputs, scripts, raw results, figures, manuscript and release provenance. Regenerating artifacts requires refreshing archive_sha256.json with --write after verifying their execution manifests.
+
+Publication ZIP builder, offline Git bundle support, Windows reproduction script and author/Zenodo drafts are in publication/. See publication/README.md for the remaining DOI and author-confirmation steps.
