@@ -9,7 +9,7 @@ Scope: package 0.1.2, commit faee106360389a8e75199893f6e8c68c28876c8d, public so
 | `bertopic_topics()` and `bertopic_topic_terms()` return R-friendly topic metadata and terms/weights | Both convert upstream results to tibbles. | Full Windows suite and fresh-process smoke comparison. | Accurate. |
 | `bertopic_find_topics()` returns IDs, scores, and labels | Wrapper augments upstream IDs/scores with `Name` from topic info. | `R/info.R`; exercised by Demo. | Accurate for models with an embedding backend. |
 | `bertopic_get_document_info()` returns document metadata | Wrapper converts `get_document_info()` to a tibble and exposes failures. | `test-info.R`. | Accurate. |
-| `bertopic_get_representative_docs()` returns ranked documents | Conversion handles character and structured backend results and validates topic IDs. | `test-representative-docs-regression.R`, `test-info.R`. | Covered by retained worked-example outputs. |
+| `bertopic_get_representative_docs()` returns ranked documents | Conversion handles character and structured backend results and validates topic IDs. | `test-representative-docs-regression.R`, `test-info.R`. | Now included in the principal API table and retained worked-example outputs; the tested rank field denotes returned order. |
 | `predict()` and `bertopic_transform()` return assignments and optional strengths | `predict(type = "class"/"prob"/"both")` delegates to transform. | `test-exporters-predict.R`, roundtrip tests. | Accurate. |
 | Document-topic export maps columns to actual fitted topic IDs | Dense and sparse paths derive labels from non-outlier topic IDs rather than positional assumptions. | `test-document-topic-id-regression.R`, visualization regression fixture. | Accurate after 0.1.1; cite the corrected release. |
 | Topic modification is supported | `bertopic_update_topics()` mutates the retained Python model. `bertopic_reduce_topics()` returns an updated R wrapper with synchronized cached fields, so callers must assign its return value. | Reduction argument/state regression tests; corrected `demo.R`. | State the reassignment requirement if reduction is shown. |
@@ -29,8 +29,14 @@ Scope: package 0.1.2, commit faee106360389a8e75199893f6e8c68c28876c8d, public so
 - All five independent R/Python pairs passed. Maximum absolute c-TF-IDF difference: 4.9960036108132e-16; probability difference: 4.85722573273506e-16. These are tolerance comparisons, not bitwise equality.
 - Paired R-minus-Python median differences: fitting 4.183 seconds, cold-process time 11.400 seconds, peak memory 200.0 MiB. Embedding generation and UMAP fitting are excluded.
 - Full worked example, dense/sparse export comparison, interactive/static figures and six restoration checks completed.
-- Manuscript synchronized from recorded outputs; repeated synchronization is idempotent. Full LaTeX/Biber build succeeded (26 pages), with no final undefined references or overfull boxes. Numerical table pages and runtime plot were visually checked.
+- Manuscript synchronized from recorded outputs; repeated synchronization is idempotent. The original analysis draft's full LaTeX/Biber build succeeded (26 pages), with no final undefined references or overfull boxes. Numerical table pages and runtime plot were visually checked.
 - Source archive, resolved Windows environment, hashes, seeds, raw worker output, figures/tables and the exact manuscript snapshot are retained locally.
+
+## Revised paper
+
+The manuscript revision is retained in benchmark/manuscript-revision-0.1.2/. It adds representative-document, reduction and custom-label API mappings, explicit reduction reassignment, bounded load/export semantics, six restoration checks, package/archive validation, exact backend setup guidance and the actual example figure. Public materials and pending DOI/author fields are distinguished. The supplied R installer is explicitly a bootstrap rather than a historical lockfile.
+
+The revised paper compiled cleanly to 29 pages; its API table and inserted figure were visually checked. All three formal numerical table bodies match the recorded artifact exports. The figure source uses the archived full-example topic metadata, and the benchmark synchronizer preserves the revised narrative.
 
 ## Remaining items
 

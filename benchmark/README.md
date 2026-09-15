@@ -123,3 +123,5 @@ The final 0.1.2 run is retained in results/ and example-results/. Its synchroniz
 Validate the retained archive using Python 3.10+ without loading machine-learning packages: python benchmark/verify_archive.py. Hashes cover retained inputs, scripts, raw results, figures, manuscript and release provenance. Regenerating artifacts requires refreshing archive_sha256.json with --write after verifying their execution manifests.
 
 Publication ZIP builder, offline Git bundle support, Windows reproduction script and author/Zenodo drafts are in publication/. See publication/README.md for the remaining DOI and author-confirmation steps.
+
+The revised 29-page paper with expanded API/state semantics, accurate validation and setup guidance, and the full-example figure is retained in manuscript-revision-0.1.2/. The earlier manuscript-0.1.2/ remains the historical analysis draft. Formal numerical tables are unchanged, and sync_manuscript.py preserves the edited narrative.

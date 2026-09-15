@@ -1,0 +1,19 @@
+{
+  "package_version": "0.1.2",
+  "release_commit": "faee106360389a8e75199893f6e8c68c28876c8d",
+  "formal_results": "benchmark/results",
+  "example_results": "benchmark/example-results",
+  "source_topic_metadata_sha256": "c485e09dc0ad038246502527b58e670cb5b485ae9928193d66bbc19bcd332790",
+  "manuscript_pages": 29,
+  "formal_numerical_tables_unchanged": true,
+  "latex_final_warnings": 0,
+  "visual_checks": [
+    "API mapping table, page 8",
+    "Worked-example figure, page 15"
+  ],
+  "pending": [
+    "Historical SMS selection/reconstruction (E deferred)",
+    "Archive DOI and confirmed author facts",
+    "Complete historical R dependency lock"
+  ]
+}
