@@ -166,7 +166,7 @@ if (!viz_ok) {
 say("\n[10] Topic operations: update_topics(), reduce_topics(), set_topic_labels()")
 invisible(bertopic_update_topics(m, docs))
 # try to reduce; backend-dependent (docs may be required). We pass docs to be safe.
-invisible(bertopic_reduce_topics(m, nr_topics = "auto", docs = docs))
+m <- bertopic_reduce_topics(m, nr_topics = "auto", docs = docs)
 
 topics_after <- bertopic_topics(m)
 say("  - Topics (rows) before vs after reduce:", nrow(topics_tbl), "->", nrow(topics_after))

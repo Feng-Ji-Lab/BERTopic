@@ -445,18 +445,15 @@ bertopic_available <- function() {
 
 #' Quick self-check for the BERTopic R interface
 #'
-#' Runs a quick end-to-end smoke test:
-#' \itemize{
-#'   \item Report Python path/version.
-#'   \item Verify that \code{bertopic} is importable and report its version.
-#'   \item Minimal round trip: \code{fit -> transform -> save -> load}.
-#' }
+#' Runs a deterministic fit/transform/save/load check with synthetic embeddings
+#' and compares assignments, probabilities, and topic metadata before and after
+#' loading the model.
 #'
 #' @return A named list with fields:
 #' \describe{
 #'   \item{python_ok}{Logical.}
 #'   \item{bertopic_ok}{Logical.}
-#'   \item{roundtrip_ok}{Logical.}
+#'   \item{roundtrip_ok}{Logical; true only when all compared outputs agree.}
 #'   \item{details}{Character vector of diagnostic messages.}
 #' }
 #' @examples
@@ -465,88 +462,112 @@ bertopic_available <- function() {
 #' }
 #' @export
 bertopic_self_check <- function() {
-  out <- list(python_ok = FALSE, bertopic_ok = FALSE, roundtrip_ok = FALSE, details = character())
+  out <- list(
+    python_ok = FALSE,
+    bertopic_ok = FALSE,
+    roundtrip_ok = FALSE,
+    details = character()
+  )
+  fail <- function(message) {
+    out$details <- c(out$details, message)
+    out
+  }
+  equal_numeric <- function(a, b) {
+    if (is.null(a) || is.null(b)) return(is.null(a) && is.null(b))
+    isTRUE(all.equal(as.matrix(a), as.matrix(b), tolerance = 1e-12, check.attributes = FALSE))
+  }
 
   if (!requireNamespace("reticulate", quietly = TRUE)) {
-    out$details <- c(out$details, "reticulate not available")
-    return(out)
+    return(fail("reticulate not available"))
   }
-
-  # Python info
-  cfg <- reticulate::py_config()
-  out$python_ok <- !is.null(cfg$python)
-
-  # bertopic importable?
+  cfg <- try(reticulate::py_config(), silent = TRUE)
+  if (inherits(cfg, "try-error") || is.null(cfg$python)) {
+    return(fail("Python is not available"))
+  }
+  out$python_ok <- TRUE
   if (!reticulate::py_module_available("bertopic")) {
-    out$details <- c(out$details, "bertopic not importable")
-    return(out)
+    return(fail("bertopic not importable"))
   }
-  bt <- reticulate::import("bertopic")
   out$bertopic_ok <- TRUE
 
-  # Prepare docs (prefer sms_spam$text; fallback to tiny list)
-  docs <- NULL
-  if (exists("sms_spam", inherits = TRUE)) {
-    sms <- get("sms_spam", inherits = TRUE)
-    if (is.data.frame(sms) && "text" %in% names(sms)) {
-      docs <- as.character(sms$text)
-    }
-  }
-  if (is.null(docs)) {
-    docs <- c(
-      "topic modeling with transformers",
-      "free ringtone offer unsubscribe stop",
-      "meeting at 3pm see you later",
-      "love you so much my life"
+  documents <- c(
+    rep("apple orange banana fruit market", 15L),
+    rep("football team match score coach", 15L),
+    rep("software code computer data model", 15L)
+  )
+  groups <- rep(seq_len(3L), each = 15L)
+  set.seed(42L)
+  centers <- rbind(
+    c(-4, 0, 0, 0, 0),
+    c(0, 4, 0, 0, 0),
+    c(0, 0, 4, 0, 0)
+  )
+  embeddings <- centers[groups, , drop = FALSE] +
+    matrix(stats::rnorm(length(documents) * 5L, sd = 0.02), ncol = 5L)
+
+  components <- try({
+    dimensionality <- reticulate::import("bertopic.dimensionality", convert = FALSE)
+    hdbscan <- reticulate::import("hdbscan", convert = FALSE)
+    text_features <- reticulate::import("sklearn.feature_extraction.text", convert = FALSE)
+    list(
+      umap = dimensionality$BaseDimensionalityReduction(),
+      hdbscan = hdbscan$HDBSCAN(
+        min_cluster_size = as.integer(5L),
+        metric = "euclidean",
+        cluster_selection_method = "eom",
+        prediction_data = TRUE
+      ),
+      vectorizer = text_features$CountVectorizer(stop_words = "english")
     )
+  }, silent = TRUE)
+  if (inherits(components, "try-error")) {
+    return(fail("Failed to construct deterministic self-check components"))
   }
 
-
-  # Construct model (with embedding model if available)
-  model <- try(bt$BERTopic(
-    embedding_model = "all-MiniLM-L6-v2",
+  model <- try(bertopic_fit(
+    documents,
+    embeddings = embeddings,
+    umap_model = components$umap,
+    hdbscan_model = components$hdbscan,
+    vectorizer_model = components$vectorizer,
     calculate_probabilities = TRUE
   ), silent = TRUE)
-  if (inherits(model, "try-error")) {
-    # Fallback without embedding_model
-    model <- try(bt$BERTopic(calculate_probabilities = TRUE), silent = TRUE)
-    if (inherits(model, "try-error")) {
-      out$details <- c(out$details, "BERTopic() constructor failed")
-      return(out)
-    }
+  if (inherits(model, "try-error")) return(fail("fit failed"))
+
+  transformed_before <- try(bertopic_transform(model, documents, embeddings), silent = TRUE)
+  info_before <- try(bertopic_topics(model), silent = TRUE)
+  if (inherits(transformed_before, "try-error") || inherits(info_before, "try-error")) {
+    return(fail("transform or topic-info extraction failed before save"))
   }
 
-  # Fit; if it fails (e.g., no model download), retry with synthetic embeddings
-  ok <- try(model$fit_transform(docs), silent = TRUE)
-  if (inherits(ok, "try-error")) {
-    np <- try(reticulate::import("numpy", convert = FALSE), silent = TRUE)
-    if (inherits(np, "try-error")) {
-      out$details <- c(out$details, "fit_transform failed")
-      return(out)
-    }
-    rs <- np$random$RandomState(as.integer(42L))
-    emb <- rs$randn(as.integer(length(docs)), as.integer(16L))
-    ok2 <- try(model$fit_transform(docs, embeddings = emb), silent = TRUE)
-    if (inherits(ok2, "try-error")) {
-      out$details <- c(out$details, "fit_transform failed (even with synthetic embeddings)")
-      return(out)
-    }
+  model_path <- file.path(tempdir(), paste0("bertopic-self-check-", Sys.getpid(), ".pkl"))
+  on.exit(if (file.exists(model_path) || dir.exists(model_path)) unlink(model_path, recursive = TRUE, force = TRUE), add = TRUE)
+  saved <- try(bertopic_save(model, model_path, serialization = "pickle", overwrite = TRUE), silent = TRUE)
+  if (inherits(saved, "try-error")) return(fail("save failed"))
+  restored <- try(bertopic_load(model_path), silent = TRUE)
+  if (inherits(restored, "try-error")) return(fail("load failed"))
+
+  transformed_after <- try(bertopic_transform(restored, documents, embeddings), silent = TRUE)
+  info_after <- try(bertopic_topics(restored), silent = TRUE)
+  if (inherits(transformed_after, "try-error") || inherits(info_after, "try-error")) {
+    return(fail("transform or topic-info extraction failed after load"))
   }
 
-  tr <- try(model$transform(docs), silent = TRUE)
-  tmp <- file.path(tempdir(), paste0("bertopic-self-check-", Sys.getpid(), ".pkl"))
-  sv <- try(model$save(tmp), silent = TRUE)
-  ld <- if (!inherits(sv, "try-error")) try(bt$BERTopic$load(tmp), silent = TRUE) else structure("", class = "try-error")
-  out$roundtrip_ok <- !inherits(tr, "try-error") && !inherits(sv, "try-error") && !inherits(ld, "try-error")
-  if (file.exists(tmp)) unlink(tmp)
-
-  # Success �?only report OK
-  out$details <- c(out$details, "OK")
+  comparisons <- c(
+    cached_topics = identical(as.integer(model$topics), as.integer(restored$topics)),
+    cached_probabilities = equal_numeric(model$probs, restored$probs),
+    topic_metadata = isTRUE(all.equal(as.data.frame(info_before), as.data.frame(info_after), check.attributes = FALSE)),
+    transformed_topics = identical(as.integer(transformed_before$topics), as.integer(transformed_after$topics)),
+    transformed_probabilities = equal_numeric(transformed_before$probs, transformed_after$probs)
+  )
+  out$roundtrip_ok <- all(comparisons)
+  if (out$roundtrip_ok) {
+    out$details <- "OK: fit/transform/save/load outputs agree"
+  } else {
+    out$details <- paste("Mismatch after load:", paste(names(comparisons)[!comparisons], collapse = ", "))
+  }
   out
 }
-
-
-
 
 #' Install Python dependencies for BERTopic (auto route)
 #'

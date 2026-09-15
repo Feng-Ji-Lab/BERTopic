@@ -292,7 +292,7 @@ set_bertopic_seed(2025)   # seeds R, NumPy, and Python's random; also sets PYTHO
 - `use_bertopic_condaenv(envname, required = TRUE)`
 - `bertopic_available()`
 - `bertopic_session_info()`
-- `bertopic_self_check(verbose = TRUE)`
+- `bertopic_self_check()`
 - `set_bertopic_seed(seed)`
 
 **Fit / transform / export**

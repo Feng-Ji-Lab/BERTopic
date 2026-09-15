@@ -11,17 +11,14 @@ A named list with fields:
 \describe{
 \item{python_ok}{Logical.}
 \item{bertopic_ok}{Logical.}
-\item{roundtrip_ok}{Logical.}
+\item{roundtrip_ok}{Logical; true only when all compared outputs agree.}
 \item{details}{Character vector of diagnostic messages.}
 }
 }
 \description{
-Runs a quick end-to-end smoke test:
-\itemize{
-\item Report Python path/version.
-\item Verify that \code{bertopic} is importable and report its version.
-\item Minimal round trip: \code{fit -> transform -> save -> load}.
-}
+Runs a deterministic fit/transform/save/load check with synthetic embeddings
+and compares assignments, probabilities, and topic metadata before and after
+loading the model.
 }
 \examples{
 \dontrun{
