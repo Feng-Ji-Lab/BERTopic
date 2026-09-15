@@ -9,3 +9,6 @@ all_R_files.R
 /BERTopic_*.tar.gz
 __pycache__/
 *.py[cod]
+
+# Reproducible full model includes transformer weights; keep it out of Git.
+/benchmark/example-results/model.pkl

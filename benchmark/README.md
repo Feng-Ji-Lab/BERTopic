@@ -25,7 +25,7 @@ The preparer requires an immutable Hugging Face model revision, encodes the docu
 
 ## 2. Run the exact R release
 
-Build and install the release that will be cited before running the final benchmark:
+Build and install from a clean checkout of the release tag that will be cited, then return to the benchmark harness checkout. Retain the actual source archive; the runner records its SHA-256:
 
 ```powershell
 R.exe CMD build .
@@ -83,3 +83,29 @@ Use `--package-mode source` only while developing the runner. The default `insta
 - `logs/`: separate stdout and stderr logs from every fresh process.
 
 The files under `results-legacy-0.17.4/` came from the earlier single-process prototype. They are retained as compatibility history and must not be used as the final D2 results.
+
+## 3. Export tables, figures, and the worked example
+
+After a successful paired run, regenerate the numerical report, LaTeX tables, and PNG/PDF plots from the raw outputs:
+
+```powershell
+Rscript benchmark/export_artifacts.R --results benchmark/results
+```
+
+The exporter refuses results whose equivalence checks failed. It writes its artifacts under `benchmark/results/artifacts`.
+
+Run the complete manuscript worked example separately, after the timed benchmark has finished, with the same installed 0.1.1 package and Python 0.16.0 environment:
+
+```powershell
+Rscript benchmark/run_example.R `
+  --python $python `
+  --package-archive BERTopic_0.1.1.tar.gz `
+  --output benchmark/example-results `
+  --seed 42 `
+  --max-docs 2247 `
+  --model-revision 1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+```
+
+This script requires the R packages `Matrix` and `jsonlite`. It uses the manuscript's complete embedding/reduction pipeline, while the controlled benchmark uses the frozen array and an English-stop-word vectorizer. Their topic counts need not match. It saves the full printed output, descriptive statistics, metadata, terms, query/prediction results, matrix exports, API-produced HTML, self-contained HTML, Plotly JSON, and static PNG/PDF figures from its own model.
+
+The lightweight safetensors restoration check verifies topic metadata. The additional full pickle round trip verifies cached assignments/strengths and post-load predictions at `1e-12`. The script stops on failed operations or restoration checks. A manifest records the archive/script and generated artifact hashes. The large generated `model.pkl` is excluded from Git and can be recreated with this script.
