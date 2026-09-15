@@ -1,0 +1,12 @@
+"metric","value"
+"documents",2247
+"non_outlier_topics",50
+"topic_info_rows",51
+"outliers",808
+"outlier_percent",35.9590565198042
+"term_keys",510
+"probability_rows",2247
+"probability_columns",50
+"pairs_passed",5
+"max_term_weight_difference",4.9960036108132e-16
+"max_probability_difference",4.85722573273506e-16

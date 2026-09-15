@@ -1,0 +1,80 @@
+$python
+[1] "C:/Users/zby15/miniconda/envs/r-bertopic-016/python.exe"
+
+$libpython
+[1] "C:/Users/zby15/miniconda/envs/r-bertopic-016/python310.dll"
+
+$version
+[1] "3.10"
+
+$numpy
+[1] TRUE
+
+$numpy_version
+[1] "1.26.4"
+
+$bertopic_version
+[1] "0.16.0"
+
+$modules
+                  module available version
+1               bertopic      TRUE  0.16.0
+2  sentence_transformers      TRUE   2.7.0
+3                  torch      TRUE   2.1.2
+4           transformers      TRUE  4.47.0
+5                   umap      TRUE   0.5.5
+6                hdbscan      TRUE  0.8.37
+7                  numpy      TRUE  1.26.4
+8                  scipy      TRUE  1.11.4
+9                sklearn      TRUE   1.4.2
+10                pandas      TRUE   2.2.3
+11                plotly      TRUE  5.24.1
+
+Documents: 2247 
+
+ ham spam 
+1500  747 
+Fitting the full worked-example pipeline...
+<bertopic_r>
+  python_class: BERTopic 
+  topics: 51 
+# A tibble: 8 × 5
+  Topic Count Name                       Representation Representative_Docs
+  <dbl> <dbl> <chr>                      <list>         <list>             
+1    -1   808 -1_you_to_me_the           <chr [10]>     <chr [3]>          
+2     0   122 0_love_my_life_you         <chr [10]>     <chr [3]>          
+3     1    94 1_chat_text_stop_txt       <chr [10]>     <chr [3]>          
+4     2    80 2_tone_ringtone_tones_week <chr [10]>     <chr [3]>          
+5     3    64 3_pub_at_drive_the         <chr [10]>     <chr [3]>          
+6     4    52 4_class_exam_school_lesson <chr [10]>     <chr [3]>          
+7     5    48 5_won_claim_draw_prize     <chr [10]>     <chr [3]>          
+8     6    46 6_he_him_carlos_and        <chr [10]>     <chr [3]>          
+# A tibble: 5 × 3
+  topic score label                                
+  <int> <dbl> <chr>                                
+1     7 0.669 7_comuk_free_unsubscribe_stop        
+2     2 0.464 2_tone_ringtone_tones_week           
+3     9 0.454 9_message_please_waiting_announcement
+4     1 0.416 1_chat_text_stop_txt                 
+5    17 0.402 17_send_smth_da_it                   
+# A tibble: 3 × 2
+   rank document                                                                
+  <int> <chr>                                                                   
+1     1 Good afternoon, my love! How goes that day ? I hope maybe you got some …
+2     2 Hello, my love ! How went your day ? Are you alright ? I think of you, …
+3     3 Good afternoon, my love ... How goes your day ? How did you sleep ? I h…
+[[1]]
+[1] -1
+
+[[2]]
+[1] 7
+
+Document-topic matrix: 2247 50 
+                           check passed
+1     safetensors_topic_metadata   TRUE
+2          pickle_topic_metadata   TRUE
+3           pickle_cached_topics   TRUE
+4    pickle_cached_probabilities   TRUE
+5        pickle_transform_topics   TRUE
+6 pickle_transform_probabilities   TRUE
+Worked example completed with every restoration check passing.

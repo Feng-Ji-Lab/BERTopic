@@ -1,0 +1,51 @@
+timestamp_utc: 2026-09-15 06:14:03 UTC
+git_commit: 2dc3018fc5aae105c928edff47a0fccd14ed0ce9
+package_mode: installed
+python: C:/Users/zby15/miniconda/envs/r-bertopic-016/python.exe
+documents: C:/Users/zby15/Desktop/ss/BERTopic/data/sms_spam.csv
+embeddings: C:/Users/zby15/Desktop/ss/BERTopic/benchmark/inputs/reduced_embeddings.npy
+repetitions: 5
+max_docs: 2247
+seed: 42
+min_cluster_size: 10
+expected_package_version: 0.1.1
+expected_bertopic_version: 0.16.0
+process_order: alternating; R first on odd iterations, Python first on even iterations
+all_equivalence_checks_passed: TRUE
+
+input_manifest:
+{
+  "documents_file": "C:\\Users\\zby15\\Desktop\\ss\\BERTopic\\data\\sms_spam.csv",
+  "documents_file_sha256": "2f90a92a0503f4260af73ba884c1db7af88c253dd783f12a20a485f3fb036675",
+  "selected_documents": 2247,
+  "selected_documents_sha256": "cb9b8a3c39148644538c4f6ecdfae2bb97060f2694454bbc1d69aa80a652b3cd",
+  "selected_documents_hash_format": "sha256(length:uint64be || utf8(document))",
+  "embedding_model": "all-MiniLM-L6-v2",
+  "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "source_dimensions": 384,
+  "reduced_dimensions": 5,
+  "embeddings_dtype": "float64",
+  "embeddings_memory_order": "F",
+  "seed": 42,
+  "embeddings_file": "C:\\Users\\zby15\\Desktop\\ss\\BERTopic\\benchmark\\inputs\\reduced_embeddings.npy",
+  "embeddings_sha256": "f8169618bed55d8c4f3e22a8c84a4a4aba914f6e5f3842d0511cc33792bc3531",
+  "python_version": "3.10.21 | packaged by conda-forge | (main, Aug 21 2026, 22:38:44) [MSC v.1944 64 bit (AMD64)]",
+  "numpy_version": "1.26.4",
+  "sentence_transformers_version": "2.7.0",
+  "umap_learn_version": "0.5.5",
+  "torch_version": "2.1.2",
+  "thread_settings": {
+    "PYTHONHASHSEED": "42",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "umap": {
+    "n_neighbors": 15,
+    "n_components": 5,
+    "min_dist": 0,
+    "metric": "cosine",
+    "random_state": 42
+  }
+}

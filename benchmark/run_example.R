@@ -78,7 +78,7 @@ main <- function() {
   new_docs <- c("Love you so much, see you tonight.", "Free subscription! Reply STOP to unsubscribe.")
   predictions <- predict(model, new_docs, type = "both")
   print(predictions$topics)
-  write_example_csv(data.frame(text = new_docs, Topic = predictions$topics), file.path(output, "predictions.csv"), row.names = FALSE)
+  write_example_csv(data.frame(text = new_docs, Topic = as.integer(predictions$topics)), file.path(output, "predictions.csv"), row.names = FALSE)
   write.table(as.matrix(predictions$probs), file.path(output, "prediction_probabilities.csv"), sep = ",",
               row.names = FALSE, col.names = FALSE, quote = FALSE)
   matrix <- bertopic_as_document_topic_matrix(model, sparse = FALSE, prefix = TRUE)

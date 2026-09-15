@@ -1,0 +1,4 @@
+
+# Preserve exact execution/archive bytes for recorded SHA-256 hashes.
+/benchmark/** -text whitespace=cr-at-eol
+/provenance/** -text whitespace=cr-at-eol

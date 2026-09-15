@@ -1,0 +1,14 @@
+metric,value
+fit_seconds,0.64014459999452811
+peak_rss_bytes,421437440
+python_version,"3.10.21 | packaged by conda-forge | (main, Aug 21 2026, 22:38:44) [MSC v.1944 64 bit (AMD64)]"
+bertopic_version,0.16.0
+numpy_version,1.26.4
+sklearn_version,1.4.2
+torch_version,2.1.2+cpu
+transformers_version,4.47.0
+umap_version,0.5.5
+hdbscan_version,0.8.37
+documents,2247
+topics,51
+outliers,808

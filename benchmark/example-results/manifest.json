@@ -1,0 +1,116 @@
+{
+  "timestamp_utc": "2026-09-15 06:43:39 UTC",
+  "package_version": "0.1.2",
+  "package_library": "C:/Users/zby15/Desktop/ss/.bertopic-release-lib-0.1.2/BERTopic",
+  "package_archive": "C:/Users/zby15/Desktop/ss/BERTopic/BERTopic_0.1.2.tar.gz",
+  "package_archive_sha256": "691cf1705940cb594aae3d2446baed71e7e449429bf8051c462f7845d71e69f2",
+  "script_sha256": "00facac9d846abf66eb47da5dae647d24bbf3bee6155e363ead9d4561d358b1b",
+  "helper_sha256": "39b1a9f7a60f7db75c7600a3d10f9d4610f653d9cabc4618febabf176467d0b5",
+  "python": "C:/Users/zby15/miniconda/envs/r-bertopic-016/python.exe",
+  "backend": {
+    "python": "C:/Users/zby15/miniconda/envs/r-bertopic-016/python.exe",
+    "libpython": "C:/Users/zby15/miniconda/envs/r-bertopic-016/python310.dll",
+    "version": "3.10",
+    "numpy": true,
+    "numpy_version": "1.26.4",
+    "bertopic_version": "0.16.0",
+    "modules": [
+      {
+        "module": "bertopic",
+        "available": true,
+        "version": "0.16.0"
+      },
+      {
+        "module": "sentence_transformers",
+        "available": true,
+        "version": "2.7.0"
+      },
+      {
+        "module": "torch",
+        "available": true,
+        "version": "2.1.2"
+      },
+      {
+        "module": "transformers",
+        "available": true,
+        "version": "4.47.0"
+      },
+      {
+        "module": "umap",
+        "available": true,
+        "version": "0.5.5"
+      },
+      {
+        "module": "hdbscan",
+        "available": true,
+        "version": "0.8.37"
+      },
+      {
+        "module": "numpy",
+        "available": true,
+        "version": "1.26.4"
+      },
+      {
+        "module": "scipy",
+        "available": true,
+        "version": "1.11.4"
+      },
+      {
+        "module": "sklearn",
+        "available": true,
+        "version": "1.4.2"
+      },
+      {
+        "module": "pandas",
+        "available": true,
+        "version": "2.2.3"
+      },
+      {
+        "module": "plotly",
+        "available": true,
+        "version": "5.24.1"
+      }
+    ]
+  },
+  "seed": 42,
+  "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "documents": 2247,
+  "umap": {
+    "n_neighbors": 15,
+    "n_components": 5,
+    "min_dist": 0,
+    "metric": "cosine",
+    "random_state": 42
+  },
+  "artifact_sha256": {
+    "data_summary.csv": "cc7faf853afe3151fc4979d9bc2c0074b98f34714c277e29f4b9e946d96f5291",
+    "document_info.csv": "a46e3cd93ff5eba8328a75ae85800f461bb1ba19d449eefb170aa54aa79b1436",
+    "document_topic_matrix.csv": "a96ca308ef9b631183d1b8de1a989e49e99281f600bcbee9460626e587d12e67",
+    "documents.csv": "4163181d3b763cf30f50e4293b9c8519c7f098873c762668961638d58152d71a",
+    "model-safetensors/config.json": "2ba21ee173f5461b1a0c91256104c7ec6b1e6e04cf55182539396baea606e28e",
+    "model-safetensors/topic_embeddings.safetensors": "6a3424b250977895297607d72f8b040e412e57fca95164cec5da9fa2be5a9d49",
+    "model-safetensors/topics.json": "870de2bc1bd627f7b6468d2edd5c42d109cb8e89fde70620803fdbcda1ca6433",
+    "model.pkl": "2c390fdb9c6d10ee82460d8ad2ef5721657bf8ea86a218cc96f4601ba5ad97ef",
+    "prediction_probabilities.csv": "af63f31cd539087310e6b81dd1ad6435c744879216e1b05ba81b291c04e59ebb",
+    "predictions.csv": "740bf19cef671150f2d41aefc5ed3f61580814a959f5c4d86a3e5b94f32b8ec7",
+    "query_topics.csv": "2b862019a3d60fa75cdb6e944f09f483062b091525777c20926f1b2939c99b39",
+    "r_session_info.txt": "ef94dc2de6e79144aa608da610429a89d15e779c03b23a7665c27cf82396888b",
+    "representative_documents.csv": "8dffcaee504e71ab74a59a1caf43a13f92e9a65c642b1e657a61a82ebad9d6a6",
+    "restoration_checks.csv": "9f1c4c2a661bf459f5a98424fa75ff1b01b99979f51e4904e8e636f2ab20a329",
+    "topic_counts.pdf": "583d82f5f4b0b54429784ad34d7daa4273e306b68c429e35d0ffc1fe036811e6",
+    "topic_counts.png": "3a92c171492af9acf28a08b37d63797cce3e1795f2ce6979b36d0e3e8fbb231f",
+    "topic_info.csv": "c485e09dc0ad038246502527b58e670cb5b485ae9928193d66bbc19bcd332790",
+    "topic_similarity.csv": "410ea33471babc6bbfa6677bd1fce737a32dbdce8406e7bbac7295e16c5e78bf",
+    "topic_similarity.pdf": "eedd752f630b55b6ecc15c8b30dbdeea2febfcc50b36c2e027ced929e009ae55",
+    "topic_similarity.png": "7e1b2cfedc9f126e8fb18e8d617465b7f08d45af5b611e0c84777a1e95420704",
+    "topic_terms.csv": "891e57cee6515b18978baaa887ce17e6d8b0cc8b7b63ea62b81e5cf34ca4b7ff",
+    "updated_topic_info.csv": "c485e09dc0ad038246502527b58e670cb5b485ae9928193d66bbc19bcd332790",
+    "viz_heatmap.html": "edbad67a0469877a95bc421708d8f264c88044ead647ea1501ac7b4f193ba2cd",
+    "viz_heatmap.json": "56d46f2fba4193c2d3c7fe588f04d603f84269a4aa9e97c05ebc41f4d70920d3",
+    "viz_heatmap_wrapper.html": "5f4a692271f27a96175a5a7d2b3194352bbd9f9dc6e2f005ddc5d170441660b6",
+    "viz_topics.html": "6c62b9d827f9b72634e70059c524e3ffed80a94ac615de9c80aafa3ff44aae81",
+    "viz_topics.json": "b5f032a5c95286fb55f9d950b3b7d3e274797bc132b10b3d01c7c0699dc5228f",
+    "viz_topics_wrapper.html": "43b0bec017ae10a4f80c82c64fee103bd84d8b8a8a9ab05725e01f0f4aaeda05"
+  },
+  "notes": ["The lightweight safetensors check covers topic metadata; it does not assert HDBSCAN inference equality.", "The pickle check preserves the full backend and compares cached fields and post-load inference.", "Model weights and the large generated pickle are reproduced by this script rather than committed to Git."]
+}
