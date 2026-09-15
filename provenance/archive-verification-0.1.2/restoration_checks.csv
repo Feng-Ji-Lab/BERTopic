@@ -1,0 +1,7 @@
+"check","passed"
+"safetensors_topic_metadata",TRUE
+"pickle_topic_metadata",TRUE
+"pickle_cached_topics",TRUE
+"pickle_cached_probabilities",TRUE
+"pickle_transform_topics",TRUE
+"pickle_transform_probabilities",TRUE

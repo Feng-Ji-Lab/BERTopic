@@ -1,0 +1,29 @@
+{
+  "validated_analysis_commit": "2aef241b177b4f061593faca7d17b4558450d220",
+  "source": "Fresh clone of SOURCE.bundle from the verified publication ZIP",
+  "exact_package_version": "0.1.2",
+  "package_archive_sha256": "691cf1705940cb594aae3d2446baed71e7e449429bf8051c462f7845d71e69f2",
+  "workflow_exit_code": 0,
+  "independent_pairs_passed": 5,
+  "restoration_checks_passed": 6,
+  "worked_example_numerical_csv_byte_matches": {
+    "data_summary.csv": true,
+    "document_info.csv": true,
+    "document_topic_matrix.csv": true,
+    "predictions.csv": true,
+    "prediction_probabilities.csv": true,
+    "query_topics.csv": true,
+    "representative_documents.csv": true,
+    "topic_info.csv": true,
+    "topic_terms.csv": true,
+    "topic_similarity.csv": true,
+    "updated_topic_info.csv": true
+  },
+  "scope": "Fresh Git working copy and isolated exact-release R library; existing validated Windows Python environment and R dependencies",
+  "notes": [
+    "Formal manuscript timing numbers remain from benchmark/results, not this confirmation run.",
+    "Expected upstream lightweight-load/pickle environment messages were emitted.",
+    "reticulate binary reports it was built under R 4.4.3; runtime is recorded as R 4.4.1.",
+    "No fresh Conda/R dependency installation was performed for this confirmation."
+  ]
+}

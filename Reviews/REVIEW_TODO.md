@@ -12,7 +12,7 @@
 - D3???????????????????????/HTML?????? PDF ?????????? pickle ???????????????????? F1??????
 - ???159 PASS?0 FAIL?0 WARN?0 SKIP?R CMD check ? 0 ERROR?0 WARNING?1 ??? UTF-8 ?? NOTE???????????????????????? 26 ??
 - E???????????? SMS ????????????
-- F1??????? ZIP??? Git bundle?Windows ????? Zenodo metadata ???DOI ????????
+- F1?ZIP??? Git bundle?Windows ????? Zenodo metadata ???????????????????????????????11 ? worked-example ?? CSV ???????????DOI?????? creators/license ?????
 - F2?F3???????? JSON ? CRediT ?????????????????????
 
 ## 使用说明
@@ -24,7 +24,7 @@
 
 ## A. 先确认论文对软件/API 的描述准确
 
-### [ ] A1. 逐段核对主稿中的包结构、函数、参数、返回值和行为
+### [x] A1. 逐段核对主稿中的包结构、函数、参数、返回值和行为
 
 **要做什么**
 
@@ -63,7 +63,7 @@
 
 ## B. 软件审计问题（先修代码与测试，再改正文）
 
-### [ ] B1. 检查并修复 representative-documents wrapper
+### [x] B1. 检查并修复 representative-documents wrapper
 
 **要做什么**
 
@@ -87,7 +87,7 @@
 
 > The evaluation remains narrow. It [...] did not test every function that modifies or extracts information from a fitted model.
 
-### [ ] B2. 修复 topic reduction 中的 `nr_topics` 处理
+### [x] B2. 修复 topic reduction 中的 `nr_topics` 处理
 
 **要做什么**
 
@@ -111,7 +111,7 @@
 
 > The strongest next validation step is a clean-environment test matrix across macOS, Linux, and Windows that covers installation, fitting, transformation, representative documents, topic reduction, state synchronization, visualization, and save--load reuse.
 
-### [ ] B3. Python 模型改变后同步 R 侧 `topics` 和 `probs`
+### [x] B3. Python 模型改变后同步 R 侧 `topics` 和 `probs`
 
 **要做什么**
 
@@ -133,7 +133,7 @@
 
 > Topic representations can be recomputed after inspection. `bertopic_update_topics(model, docs)`
 
-### [ ] B4. 修复 custom topic labels 的 Python key 类型
+### [x] B4. 修复 custom topic labels 的 Python key 类型
 
 **要做什么**
 
@@ -155,7 +155,7 @@
 
 > `bertopic_topics()` & `get_topic_info()` & Topic metadata as a tibble
 
-### [ ] B5. 修复 document-topic matrix 列与真实 topic ID 的映射
+### [x] B5. 修复 document-topic matrix 列与真实 topic ID 的映射
 
 **要做什么**
 
@@ -177,7 +177,7 @@
 
 > When `calculate_probabilities = TRUE`, the matrix contains HDBSCAN-derived membership strengths for the non-outlier topics supported by the fitted model.
 
-### [ ] B6. 让 documented self-check 真正完成其声称的 round trip
+### [x] B6. 让 documented self-check 真正完成其声称的 round trip
 
 **要做什么**
 
@@ -197,7 +197,7 @@
 
 > Two functions support routine diagnosis. `bertopic_available()` checks whether the active interpreter can import BERTopic. `bertopic_session_info()` reports the Python path and version together with the availability of BERTopic, sentence-transformers, PyTorch, UMAP, and HDBSCAN.
 
-### [ ] B7. 使 save/load 恢复足够的 R 侧状态
+### [x] B7. 使 save/load 恢复足够的 R 侧状态
 
 **要做什么**
 
@@ -223,7 +223,7 @@
 
 > Saved model cannot be restored elsewhere & Backend or serialization mismatch & Record versions, prefer a supported portable serialization, and test restoration before archiving
 
-### [ ] B8. 修复把失败变成 skip、或遮蔽导出函数的测试
+### [x] B8. 修复把失败变成 skip、或遮蔽导出函数的测试
 
 **要做什么**
 
@@ -252,7 +252,7 @@
 
 ## C. 后端版本、安装和跨平台验证
 
-### [ ] C1. 决定并文档化实际支持的 Python BERTopic 版本范围
+### [x] C1. 决定并文档化实际支持的 Python BERTopic 版本范围
 
 **要做什么**
 
@@ -274,7 +274,7 @@
 
 > This exposes BERTopic's configurable components within the backend versions explicitly supported by the R package. It does not guarantee forward compatibility with changed Python signatures.
 
-### [ ] C2. 统一 Conda 与 virtualenv 安装路线并报告精确依赖版本
+### [x] C2. 统一 Conda 与 virtualenv 安装路线并报告精确依赖版本
 
 **要做什么**
 
@@ -366,7 +366,7 @@
 
 > Before submission, the complete example should be rerun in a clean supported environment and its printed results, HTML files, and restoration check should be captured in the archive.
 
-### [ ] D3. 保存重跑的完整 provenance 与可复现材料
+### [x] D3. 保存重跑的完整 provenance 与可复现材料
 
 **要做什么**
 

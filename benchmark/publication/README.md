@@ -28,11 +28,11 @@ Use Windows x64, R 4.4.1, Git and Conda. Create a new environment from the archi
 ~~~powershell
 conda env create --name r-bertopic-reproduce-012 --file provenance/windows-bertopic-0.16.0.yml
 $python = Join-Path (conda info --base) 'envs/r-bertopic-reproduce-012/python.exe'
-Rscript -e 'install.packages(c("reticulate","rlang","tibble","testthat","withr","Matrix","jsonlite","htmltools","ggplot2"), repos="https://cloud.r-project.org")'
+Rscript benchmark/publication/install_r_dependencies.R
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File benchmark/publication/reproduce_windows.ps1 -PythonPath $python
 ~~~
 
-The process-scoped execution policy runs this trusted unsigned archive script without changing system policy. The script first validates archived hashes and versions, installs the retained exact source into an isolated R library, then creates separate benchmark/worked-example outputs. It reuses the frozen input; full example reconstruction may download the immutable MiniLM model revision. Hardware-dependent times are expected to change. Fresh Conda reconstruction was not rerun for this publication package; the retained evidence is the previously validated clean Windows environment and exact-release checks.
+The process-scoped execution policy runs this trusted unsigned archive script without changing system policy. The R dependency installer is a bootstrap against current CRAN; exact historical R dependency versions are recorded in the worker/example session files and must be restored if an identical stack is required. The script first validates archived hashes and versions, installs the retained exact source into an isolated R library, then creates separate benchmark/worked-example outputs. It reuses the frozen input; full example reconstruction may download the immutable MiniLM model revision. Hardware-dependent times are expected to change. The full entrypoint was tested from a fresh SOURCE.bundle clone with an isolated exact-release R library: five paired comparisons and all six restoration checks passed; eleven numerical CSVs matched the formal outputs byte for byte. Evidence is under provenance/archive-verification-0.1.2/. The existing validated Python environment/R dependencies were reused; fresh Conda reconstruction was not rerun for this publication package.
 
 ## Complete F1
 

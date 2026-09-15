@@ -66,7 +66,7 @@ use_bertopic("r-bertopic")
 
 The package currently targets Python `bertopic==0.16.0`. Both the Conda and virtualenv installation helpers install the same exact direct dependencies from `inst/python/requirements.txt` and run the same import validation. Other BERTopic versions are not guaranteed to work because Python method signatures and serialization behavior can change; test a version separately before using it and record the exact backend version with `bertopic_session_info()`. Export the complete resolved environment with `scripts/export_python_lock.R` after installation.
 
-Windows validation (2026-09-14, R 4.4.1, Python 3.10.21, BERTopic 0.16.0): the complete testthat suite passed with no failures or skips in a fresh environment. The exact resolved environment is recorded in `provenance/windows-bertopic-0.16.0.yml`. An earlier package test suite also passed BERTopic 0.17.4 as separate compatibility evidence; that backend remains outside the supported version.
+Windows validation (2026-09-15, package 0.1.2, R 4.4.1, Python 3.10.21, BERTopic 0.16.0): 159 test expectations passed, with no failures, warnings or skips. R CMD check reports 0 errors, 0 warnings and one existing UTF-8 SMS data NOTE. The exact resolved environment is recorded in provenance/windows-bertopic-0.16.0.yml. The public source tag is v0.1.2; its exact archive and checksum are retained under provenance/releases/. Other backend versions remain outside this support claim.
 
 #### Self check & session info
 
@@ -326,3 +326,5 @@ set_bertopic_seed(2025)   # seeds R, NumPy, and Python's random; also sets PYTHO
 
 ---
 
+
+Five-pair Windows benchmark and full worked-example outputs are in benchmark/results/ and benchmark/example-results/. Verified upload packaging, offline source bundle reconstruction and author-confirmation materials are documented in benchmark/publication/README.md. Zenodo/OSF DOI publication and author declarations remain pending; historical SMS selection (E) is deferred.
