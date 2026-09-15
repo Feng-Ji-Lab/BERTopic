@@ -33,13 +33,53 @@
 `%||%` <- function(a, b) if (is.null(a) || (is.logical(a) && length(a) == 1 && is.na(a))) b else a
 
 
+# Read the single dependency specification used by both installation routes.
+# system.file() covers an installed package; the fallback supports pkgload and
+# direct source-tree testing.
+#' @keywords internal
+.bertopic_python_requirements <- function() {
+  path <- system.file("python", "requirements.txt", package = "BERTopic")
+  if (!nzchar(path)) {
+    source_path <- file.path("inst", "python", "requirements.txt")
+    if (file.exists(source_path)) path <- source_path
+  }
+  if (!nzchar(path) || !file.exists(path)) {
+    stop("BERTopic's Python requirements file is missing.", call. = FALSE)
+  }
+
+  requirements <- trimws(readLines(path, warn = FALSE, encoding = "UTF-8"))
+  requirements <- requirements[nzchar(requirements) & !startsWith(requirements, "#")]
+  if (!length(requirements)) {
+    stop("BERTopic's Python requirements file is empty.", call. = FALSE)
+  }
+  requirements
+}
+
+#' @keywords internal
+.validate_bertopic_modules <- function(environment) {
+  required <- c(
+    "bertopic", "sentence_transformers", "torch", "transformers",
+    "umap", "hdbscan", "numpy", "scipy", "sklearn", "pandas", "plotly"
+  )
+  unavailable <- required[!vapply(required, reticulate::py_module_available, logical(1))]
+  if (length(unavailable)) {
+    stop(sprintf(
+      "Python environment '%s' cannot import required module(s): %s.",
+      environment,
+      paste(unavailable, collapse = ", ")
+    ), call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+
 # ===== Conda route ================================================================
 
 #' Install Python dependencies for BERTopic (Conda route)
 #'
-#' Creates (or reuses) a Conda environment with a pinned Python toolchain,
-#' installs the scientific stack + PyTorch (CPU) + sentence-transformers, then
-#' installs \code{bertopic==0.16.0} via pip. Optionally validates imports.
+#' Creates (or reuses) a Conda environment with a pinned Python toolchain and
+#' installs the package's exact Python dependency specification via pip. The
+#' Conda and virtualenv routes consume the same specification.
 #'
 #' @param envname Character. Conda environment name. Default \code{"r-bertopic"}.
 #' @param python_version Character. Python version to use, e.g. \code{"3.10"}.
@@ -93,56 +133,33 @@ install_py_deps_conda <- function(envname = "r-bertopic",
     envs <- c(envs, envname)
   }
 
-  # 2) Core scientific stack
-  msg("[install_py_deps_conda] Installing core scientific stack...")
-reticulate::conda_install(envname, c(
-  "pip",
-  "numpy==1.26.4","scipy==1.11.*","scikit-learn==1.4.*","pandas",
-  "numba==0.59.*","umap-learn==0.5.5","hdbscan==0.8.37","pynndescent==0.5.12",
-  "joblib","cloudpickle","dill","tqdm","packaging","requests","pillow","plotly>=5",
-  "vc14_runtime","intel-openmp"
-), channel = "conda-forge")
+  # 2) Install the shared, exact dependency specification via pip.
+  msg("[install_py_deps_conda] Installing pinned Python packages...")
+  reticulate::conda_install(envname, "pip", channel = "conda-forge")
+  reticulate::conda_install(
+    envname,
+    .bertopic_python_requirements(),
+    pip = TRUE
+  )
 
-
-reticulate::conda_install(envname, c(
-  "transformers==4.47.0",
-  "accelerate==0.30.1",
-  "tokenizers==0.21.0",
-  "huggingface-hub>=0.23",
-  "safetensors",
-  "sentence-transformers==2.7.0"
-), pip = TRUE)
-
-  # 3) Torch + sentence-transformers (CPU)
-  msg("[install_py_deps_conda] Installing PyTorch (CPU) & sentence-transformers...")
-# try(reticulate::conda_remove(envname, c("pytorch","pytorch-cpu","torchvision","torchaudio")), silent = TRUE)
-reticulate::conda_install(envname, "pytorch-cpu==2.1.*", channel = "conda-forge")
-
-
-# 4) BERTopic via pip (inside the target conda env, independent of active Python)
-msg("[install_py_deps_conda] Installing BERTopic (pip)...")
-reticulate::conda_install(envname, "bertopic==0.16.0", pip = TRUE)
-
-# 5) Optional validation
-py_exec <- reticulate::conda_python(envname)
-if (isTRUE(validate)) {
-  msg("[install_py_deps_conda] Validating imports...")
-  # If reticulate is bound to a different Python, skip validation (but finish install)
-  if (reticulate::py_available(initialize = FALSE)) {
-    cfg <- reticulate::py_config()
-    if (!.same_path(cfg$python, py_exec)) {
-      msg("[install_py_deps_conda] reticulate is initialized to another Python; ",
-          "skipping validation. After restarting, call use_bertopic_condaenv('", envname,
-          "') then run bertopic_self_check().")
-      return(invisible(py_exec))
+  # 3) Optional validation
+  py_exec <- reticulate::conda_python(envname)
+  if (isTRUE(validate)) {
+    msg("[install_py_deps_conda] Validating imports...")
+    if (reticulate::py_available(initialize = FALSE)) {
+      cfg <- reticulate::py_config()
+      if (!.same_path(cfg$python, py_exec)) {
+        msg("[install_py_deps_conda] reticulate is initialized to another Python; ",
+            "skipping validation. After restarting, call use_bertopic_condaenv('", envname,
+            "') then run bertopic_self_check().")
+        return(invisible(py_exec))
+      }
     }
+    Sys.setenv(RETICULATE_PYTHON = py_exec)
+    reticulate::py_config()
+    .validate_bertopic_modules(envname)
+    msg("[install_py_deps_conda] Validation OK.")
   }
-  # Bind to this env for validation
-  Sys.setenv(RETICULATE_PYTHON = py_exec)
-  reticulate::py_config()
-
-  msg("[install_py_deps_conda] Validation OK.")
-}
 
 
   msg("[install_py_deps_conda] Done. Env: ", envname, "  Python: ", py_exec)
@@ -197,8 +214,9 @@ use_bertopic_condaenv <- function(envname = "r-bertopic", required = TRUE) {
 
 #' Install Python dependencies for BERTopic (virtualenv route)
 #'
-#' Creates (or reuses) a \code{virtualenv} and installs \code{bertopic==0.16.0}
-#' plus required dependencies via pip. Optionally validates imports.
+#' Creates (or reuses) a \code{virtualenv} and installs the package's exact
+#' Python dependency specification via pip. The Conda and virtualenv routes
+#' consume the same specification.
 #'
 #' @param envname Character. Virtualenv name. Default \code{"r-bertopic"}.
 #' @param python Character. Path to a Python executable to create the venv with.
@@ -246,29 +264,13 @@ install_py_deps_venv <- function(envname = "r-bertopic",
     venvs <- c(venvs, envname)
   }
 
-  # 2) Install packages into venv (pinned where helpful)
-  msg("[install_py_deps_venv] Installing Python packages (pip)...")
-  reticulate::virtualenv_install(envname, packages = c(
-    "numpy==1.26.4",
-    "scipy==1.11.*",
-    "scikit-learn==1.4.*",
-    "pandas",
-    "numba==0.59.*",
-    "umap-learn==0.5.5",
-    "hdbscan==0.8.37",
-    "pynndescent==0.5.12",
-    "safetensors",
-    "joblib",
-    "cloudpickle",
-    "dill",
-    "torch==2.1.*",
-    "transformers==4.47.0",
-    "accelerate==0.30.1",
-    "tokenizers==0.21.0",
-    "huggingface-hub>=0.23",
-    "sentence-transformers==2.7.0",
-    "bertopic==0.16.0"
-  ), ignore_installed = FALSE)
+  # 2) Install the same exact specification used by the Conda route.
+  msg("[install_py_deps_venv] Installing pinned Python packages...")
+  reticulate::virtualenv_install(
+    envname,
+    packages = .bertopic_python_requirements(),
+    ignore_installed = FALSE
+  )
 
   # 3) Optional validation
   py_exec <- reticulate::virtualenv_python(envname)
@@ -285,11 +287,7 @@ install_py_deps_venv <- function(envname = "r-bertopic",
       Sys.setenv(RETICULATE_PYTHON = py_exec)
       reticulate::py_config()
     }
-    must <- c("bertopic", "sentence_transformers", "torch", "umap", "hdbscan", "numpy", "sklearn")
-    for (m in must) {
-      if (!reticulate::py_module_available(m))
-        stop(sprintf("Module '%s' failed to import in venv '%s'.", m, envname), call. = FALSE)
-    }
+    .validate_bertopic_modules(envname)
     msg("[install_py_deps_venv] Validation OK.")
   }
 

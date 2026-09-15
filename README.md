@@ -64,7 +64,7 @@ use_bertopic("r-bertopic")
 
 ### Supported Python BERTopic version
 
-The package currently targets Python `bertopic==0.16.0`. Both the Conda and virtualenv installation helpers pin this version. Other BERTopic versions are not guaranteed to work because Python method signatures and serialization behavior can change; test a version separately before using it and record the exact backend version with `bertopic_session_info()`.
+The package currently targets Python `bertopic==0.16.0`. Both the Conda and virtualenv installation helpers install the same exact direct dependencies from `inst/python/requirements.txt` and run the same import validation. Other BERTopic versions are not guaranteed to work because Python method signatures and serialization behavior can change; test a version separately before using it and record the exact backend version with `bertopic_session_info()`. Export the complete resolved environment with `scripts/export_python_lock.R` after installation.
 
 Windows validation (2026-09-14, R 4.4.1, Python 3.10, BERTopic 0.17.4): the complete testthat suite passed with no failures or skips. This is compatibility evidence for that backend; the supported 0.16.0 release matrix still requires its final clean run.
 

@@ -1,0 +1,26 @@
+# Direct dependencies for the supported Windows/Python 3.10 backend.
+# Both install_py_deps_conda() and install_py_deps_venv() consume this file.
+bertopic==0.16.0
+numpy==1.26.4
+scipy==1.11.4
+scikit-learn==1.4.2
+pandas==2.2.3
+numba==0.59.1
+umap-learn==0.5.5
+hdbscan==0.8.37
+pynndescent==0.5.12
+joblib==1.4.2
+cloudpickle==3.1.0
+dill==0.3.9
+tqdm==4.67.1
+packaging==24.2
+requests==2.32.3
+pillow==11.0.0
+plotly==5.24.1
+safetensors==0.4.5
+torch==2.1.2
+transformers==4.47.0
+accelerate==0.30.1
+tokenizers==0.21.0
+huggingface-hub==0.27.0
+sentence-transformers==2.7.0
