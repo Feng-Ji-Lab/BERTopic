@@ -242,6 +242,60 @@ Session binding is handled by \code{use\_bertopic()}, \code{use\_bertopic\_conda
 
 Two functions support routine diagnosis. \code{bertopic\_available()} checks importability, while \code{bertopic\_session\_info()} reports the interpreter and exact versions for 11 key modules. Full Python distribution versions and R session information are also retained. The documented \code{bertopic\_self\_check()} fits, transforms, saves, loads, and compares cached fields, topic metadata, and post-load transformation outputs.
 
+\section{Availability, Installation, and Operational Guidance}
+\label{sec:installation}
+
+\subsection{Software availability}
+
+The evaluation used \pkg{BERTopic} 0.1.2, source tag \fcode{v0.1.2} and commit \fcode{faee106}. Development source and issue tracking are at \url{https://github.com/Feng-Ji-Lab/BERTopic}; the CRAN project page is \url{https://CRAN.R-project.org/package=BERTopic}. Reproduction requires the \href{https://github.com/Feng-Ji-Lab/BERTopic/raw/64907e737025fe456d3673afcf0f467df4deb20d/provenance/releases/BERTopic_0.1.2.tar.gz}{exact retained source archive}, rather than an unspecified current repository release. Versioned analysis materials are public under \href{https://github.com/Feng-Ji-Lab/BERTopic/tree/analysis-v0.1.2-r1}{\fcode{analysis-v0.1.2-r1}}, including the corrected input archive and reconstruction scripts. A version-specific OSF/Zenodo DOI remains pending. The R interface is MIT-licensed; dependencies and other archived materials retain their respective rights.
+
+\subsection{One-time backend setup}
+
+All relative paths below refer to a checkout of the package's analysis materials. For the recorded Python configuration, create a new Windows Conda environment from the archived resolved specification before starting R:
+
+\begin{lstlisting}[language={},float=htbp,caption={Creating the recorded Python environment from PowerShell.}]
+conda env create --name r-bertopic-paper-012 `
+  --file provenance/windows-bertopic-0.16.0.yml
+\end{lstlisting}
+
+If required R dependencies are absent, run \fcode{Rscript benchmark/publication/install_r_dependencies.R} from the analysis checkout. This bootstrapper uses current CRAN versions, not a historical dependency lock. Then install the retained source archive and bind the named environment before Python is initialized:
+
+\begin{lstlisting}[float=htbp,caption={Installing the tested R package and binding its Python backend.}]
+install.packages("provenance/releases/BERTopic_0.1.2.tar.gz",
+                 repos = NULL, type = "source")
+library(BERTopic)
+
+stopifnot(packageVersion("BERTopic") == "0.1.2")
+use_bertopic_condaenv("r-bertopic-paper-012")
+stopifnot(bertopic_available())
+bertopic_session_info()
+\end{lstlisting}
+
+If another interpreter has already been initialized by \pkg{reticulate}, restart R before binding this environment. For general installation, \code{install\_py\_deps\_conda()} and the virtualenv helper consume the same declared requirements. Those declarations are distinct from the fully resolved Windows environment retained for this analysis; installing them later can select different transitive dependencies.
+
+The benchmark and example session files record R 4.4.1, \pkg{reticulate} 1.45.0, and the R dependency versions used. The supplied R dependency installer bootstraps from current CRAN and is not a complete historical R lockfile. An identical R stack therefore requires restoring the recorded versions separately. Backend installation and first-use model downloads can require network access. The pinned embedding-model revision, frozen reduced array, interpreter settings, seeds, full Python distributions, and file hashes are recorded with the outputs.
+
+\subsection{Common installation and runtime problems}
+
+\begin{table}[htbp]
+\centering
+\caption{Common Installation and Runtime Problems}
+\label{tab:diagnostics}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{3.4cm}
+                             >{\raggedright\arraybackslash}X
+                             >{\raggedright\arraybackslash}p{3.7cm}}
+\toprule
+Observed problem & Likely cause & Recommended action \\
+\midrule
+\fcode{bertopic_available()} is false & BERTopic is absent from the active interpreter & Run \fcode{bertopic_session_info()}, verify the Python path, then run \fcode{install_py_deps()} \\
+Requested environment differs from active Python & \pkg{reticulate} initialized too early & Restart R, call \code{use\_bertopic()} before importing another Python module \\
+Transformer model cannot be downloaded & Network, cache, or model-hub access & Pre-download the model in the bound environment or supply precomputed embeddings \\
+Model fits but results differ across runs & A stochastic component lacks an explicit state & Pass \code{random\_state} to UMAP or other relevant components and record all versions \\
+Saved model cannot be restored elsewhere & Backend or serialization mismatch & Match versions and test the required post-load operation; lightweight files omit clustering components \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \section{Worked Example}
 
 \subsection{Dataset and example plan}
@@ -278,12 +332,14 @@ The example proceeds from environment diagnosis and fitting to inspection, searc
 
 \subsection{Environment check and fitting}
 
-The following code loads the data, creates the document vector, records the backend configuration, and explicitly fixes UMAP's random state. Setting only the global R or NumPy seed is not sufficient to make every stochastic component deterministic.
+After completing the one-time setup in Section~\ref{sec:installation}, start a fresh R session and bind its named environment before checking availability or importing Python modules. The following code loads the data, records the backend, and fixes UMAP's random state. Setting only the global R or NumPy seed is not sufficient to make every stochastic component deterministic.
 
-\begin{lstlisting}[caption={Checking the backend and fitting a BERTopic model from R.}]
+\begin{lstlisting}[float=htbp,caption={Checking the backend and fitting a BERTopic model from R.}]
 library(BERTopic)
 library(reticulate)
 
+stopifnot(packageVersion("BERTopic") == "0.1.2")
+use_bertopic_condaenv("r-bertopic-paper-012")
 stopifnot(bertopic_available())
 backend <- bertopic_session_info()
 
@@ -358,7 +414,7 @@ stopifnot(nrow(document_topic) == length(docs))
 
 The two new messages were assigned to topics \code{-1} and \code{7}, respectively. The first result illustrates that a semantically readable message can still fall outside the fitted density clusters; an outlier assignment is a model result rather than a judgment about the message's meaning. The exported training matrix contained 2,247 rows and 50 non-outlier-topic columns. With \fcode{calculate_probabilities = TRUE}, its entries are HDBSCAN-derived membership strengths. Columns carry the actual fitted topic identifiers, whose meanings may change after topic reduction. Dense and sparse exports agreed in the complete example. Using these values as downstream features requires evaluation of their measurement interpretation and uncertainty.
 
-\subsection{Visualization, representation updates, and persistence}
+\subsection{Visualization and representation updates}
 
 The wrapper writes Python Plotly figures to HTML and preserves hover information. Its standard HTML export references the Plotly content-delivery network. The retained worked-example outputs therefore also include self-contained HTML, Plotly JSON, and static R figures for offline inspection. Figure~\ref{fig:worked_counts} illustrates the eight largest non-outlier topics using the full example's fitted assignments and automatic names; it is a static summary rather than a capture of the interactive topic projection.
 
@@ -370,7 +426,7 @@ The wrapper writes Python Plotly figures to HTML and preserves hover information
 \label{fig:worked_counts}
 \end{figure}
 
-\begin{lstlisting}[caption={Creating HTML visualizations and saving the fitted model.}]
+\begin{lstlisting}[caption={Creating HTML visualizations and updating topic representations.}]
 bertopic_visualize_topics(
   model,
   file = "viz_topics.html"
@@ -384,13 +440,19 @@ bertopic_visualize_heatmap(
 # Topic representations can be recomputed after inspection.
 bertopic_update_topics(model, docs)
 updated_topic_info <- bertopic_topics(model)
+\end{lstlisting}
 
-# Save the fitted Python model; load only trusted serialized models.
+\subsection{Persistence and restoration}
+
+Choose the save format according to the intended reuse. Safetensors stores lightweight topic information and representations, omitting the fitted reducer and clusterer. With the default \fcode{save_embedding_model = FALSE}, it also omits an embedding-model reference. The following check compares restored topic metadata; it does not test new-document predictions.
+
+\begin{lstlisting}[float=htbp,caption={Saving lightweight topic information and checking restored metadata.}]
+# Use a new destination; overwrite is disabled by default.
 bertopic_save(
   model,
   path = "sms_bertopic_model",
   serialization = "safetensors",
-  overwrite = TRUE
+  overwrite = FALSE
 )
 restored_model <- bertopic_load("sms_bertopic_model")
 restored_topic_info <- bertopic_topics(restored_model)
@@ -398,6 +460,31 @@ stopifnot(identical(
   as.data.frame(restored_topic_info)[c("Topic", "Count", "Name")],
   as.data.frame(updated_topic_info)[c("Topic", "Count", "Name")]
 ))
+\end{lstlisting}
+
+For reuse of the fitted clustering path, save a full pickle with \fcode{save_embedding_model = TRUE}. Compare predictions from the current model with those from the loaded model, using the same documents and environment. The comparison below is made after representation updates, so both calls use the same model state. Only load trusted pickle files.
+
+\begin{lstlisting}[float=htbp,caption={Saving the complete model and checking post-load predictions.}]
+before_save <- predict(model, new_docs, type = "both")
+bertopic_save(
+  model,
+  path = "sms_bertopic_model.pkl",
+  serialization = "pickle",
+  save_embedding_model = TRUE,
+  overwrite = FALSE
+)
+full_model <- bertopic_load("sms_bertopic_model.pkl")
+after_load <- predict(full_model, new_docs, type = "both")
+stopifnot(identical(
+  as.integer(before_save$topics),
+  as.integer(after_load$topics)
+))
+stopifnot(isTRUE(all.equal(
+  as.matrix(before_save$probs),
+  as.matrix(after_load$probs),
+  tolerance = 1e-12,
+  check.attributes = FALSE
+)))
 \end{lstlisting}
 
 The complete worked example was rerun using the installed 0.1.2 source archive and pinned embedding-model revision. Its console output, numerical tables, HTML, Plotly JSON, and static figures were retained separately from the controlled benchmark. All six restoration checks passed: topic metadata after safetensors loading, and metadata, cached assignments, cached strengths, transformed assignments, and transformed strengths after a full pickle round trip. Lightweight formats omit the fitted reducer and clusterer, so metadata restoration does not establish identical HDBSCAN inference after lightweight loading. Full pickle reuse requires a matching environment and a trusted serialized model.
@@ -507,58 +594,6 @@ Matching results in the controlled comparison and reproducibility across indepen
 The exact 0.1.2 source archive passed \code{R CMD check --no-manual} on the tested Windows configuration with zero errors and zero warnings. The testthat entrypoint executed 159 expectations with no failures, warnings, or skips. The sole package-check NOTE concerned 341 marked UTF-8 strings in the demonstration data. These checks cover the exercised wrapper operations and regression cases; they do not establish support for every Python constructor configuration.
 
 A separate confirmation run cloned the archived Git bundle into a new working directory and installed the same source archive into an isolated R library. It reused the validated Python environment and existing R dependencies, rather than repeating a clean dependency installation. All five paired output comparisons and all six example restoration checks passed; eleven numerical CSV exports from the example matched the formal retained outputs byte for byte. Confirmation timings are archived separately and do not replace the measurements in Table~\ref{tab:benchmark}. Topic-metadata CSV exports encode list columns as JSON-valued cells; numeric matrix exports retain ordinary CSV columns. An additional checkout with \fcode{core.autocrlf=false} verified that the corrected archive preserves the recorded input bytes independently of that Git setting.
-
-\section{Availability, Installation, and Operational Guidance}
-
-\subsection{Software availability}
-
-The evaluation used \pkg{BERTopic} 0.1.2, source tag \fcode{v0.1.2} and commit \fcode{faee106}. Development source and issue tracking are at \url{https://github.com/Feng-Ji-Lab/BERTopic}; the CRAN project page is \url{https://CRAN.R-project.org/package=BERTopic}. Reproduction requires the \href{https://github.com/Feng-Ji-Lab/BERTopic/raw/64907e737025fe456d3673afcf0f467df4deb20d/provenance/releases/BERTopic_0.1.2.tar.gz}{exact retained source archive}, rather than an unspecified current repository release. Versioned analysis materials are public under \href{https://github.com/Feng-Ji-Lab/BERTopic/tree/analysis-v0.1.2-r1}{\fcode{analysis-v0.1.2-r1}}, including the corrected input archive and reconstruction scripts. A version-specific OSF/Zenodo DOI remains pending. The R interface is MIT-licensed; dependencies and other archived materials retain their respective rights.
-
-\subsection{One-time backend setup}
-
-All relative paths below refer to a checkout of the package's analysis materials. For the recorded Python configuration, create a new Windows Conda environment from the archived resolved specification before starting R:
-
-\begin{lstlisting}[language={},caption={Creating the recorded Python environment from PowerShell.}]
-conda env create --name r-bertopic-paper-012 --file provenance/windows-bertopic-0.16.0.yml
-\end{lstlisting}
-
-Install the retained R source archive and bind the named environment before Python is initialized:
-
-\begin{lstlisting}[caption={Installing the tested R package and binding its Python backend.}]
-install.packages("provenance/releases/BERTopic_0.1.2.tar.gz",
-                 repos = NULL, type = "source")
-library(BERTopic)
-
-stopifnot(packageVersion("BERTopic") == "0.1.2")
-use_bertopic_condaenv("r-bertopic-paper-012")
-stopifnot(bertopic_available())
-bertopic_session_info()
-\end{lstlisting}
-
-If another interpreter has already been initialized by \pkg{reticulate}, restart R before binding this environment. For general installation, \code{install\_py\_deps\_conda()} and the virtualenv helper consume the same declared requirements. Those declarations are distinct from the fully resolved Windows environment retained for this analysis; installing them later can select different transitive dependencies.
-
-The benchmark and example session files record R 4.4.1, \pkg{reticulate} 1.45.0, and the R dependency versions used. The supplied R dependency installer bootstraps from current CRAN and is not a complete historical R lockfile. An identical R stack therefore requires restoring the recorded versions separately. Backend installation and first-use model downloads can require network access. The pinned embedding-model revision, frozen reduced array, interpreter settings, seeds, full Python distributions, and file hashes are recorded with the outputs.
-
-\subsection{Common installation and runtime problems}
-
-\begin{table}[htbp]
-\centering
-\caption{Common Installation and Runtime Problems}
-\label{tab:diagnostics}
-\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{3.4cm}
-                             >{\raggedright\arraybackslash}X
-                             >{\raggedright\arraybackslash}p{3.7cm}}
-\toprule
-Observed problem & Likely cause & Recommended action \\
-\midrule
-\fcode{bertopic_available()} is false & BERTopic is absent from the active interpreter & Run \fcode{bertopic_session_info()}, verify the Python path, then run \fcode{install_py_deps()} \\
-Requested environment differs from active Python & \pkg{reticulate} initialized too early & Restart R, call \code{use\_bertopic()} before importing another Python module \\
-Transformer model cannot be downloaded & Network, cache, or model-hub access & Pre-download the model in the bound environment or supply precomputed embeddings \\
-Model fits but results differ across runs & A stochastic component lacks an explicit state & Pass \code{random\_state} to UMAP or other relevant components and record all versions \\
-Saved model cannot be restored elsewhere & Backend or serialization mismatch & Match versions and test the required post-load operation; lightweight files omit clustering components \\
-\bottomrule
-\end{tabularx}
-\end{table}
 
 \section{Discussion}
 

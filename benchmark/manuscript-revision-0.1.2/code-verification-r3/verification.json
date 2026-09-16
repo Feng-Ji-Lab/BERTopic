@@ -1,0 +1,22 @@
+{
+  "verification": "New manuscript setup and persistence snippets, using retained fitted model",
+  "package_version": "0.1.2",
+  "backend_version": "0.16.0",
+  "manuscript_sha256": "1e740a9299c6f12b1455144e32838de12e836a9108db5e903363ae92eff470fa",
+  "retained_model_sha256": "2c390fdb9c6d10ee82460d8ad2ef5721657bf8ea86a218cc96f4601ba5ad97ef",
+  "script_sha256": "ad9692b91d713bdace90a54322500d46da210b9643e82827fea1513f670feea5",
+  "environment_substitution": "Existing validated r-bertopic-016 in place of illustrative new r-bertopic-paper-012; no fresh Conda installation",
+  "checks": [
+    "Explicit binding and backend diagnosis",
+    "Lightweight topic metadata",
+    "Full-pickle transformed assignments",
+    "Full-pickle transformed membership strengths"
+  ],
+  "formal_results_replaced": false,
+  "passed": true,
+  "completed_utc": "2026-09-16 03:08 UTC",
+  "observed_backend_warnings": [
+    "lightweight load without embedding reference",
+    "pickle requires matching environments"
+  ]
+}

@@ -4,21 +4,23 @@
   "formal_results": "benchmark/results",
   "example_results": "benchmark/example-results",
   "source_topic_metadata_sha256": "c485e09dc0ad038246502527b58e670cb5b485ae9928193d66bbc19bcd332790",
-  "manuscript_pages": 27,
+  "manuscript_pages": 28,
   "formal_numerical_tables_unchanged": true,
   "latex_final_warnings": 0,
   "visual_checks": [
     "Title page and complete abstract, page 1",
     "API mapping table, page 7",
-    "Worked-example figure, page 14",
-    "Equivalence and runtime tables, page 18"
+    "Backend setup and package binding, pages 9-10",
+    "Complete fitting listing, page 13",
+    "Lightweight and full persistence listings, pages 17-18",
+    "Equivalence and runtime tables, page 21"
   ],
   "pending": [
     "Historical SMS selection/reconstruction (E deferred)",
     "Archive DOI and confirmed author facts",
     "Complete historical R dependency lock"
   ],
-  "editorial_revision": 2,
+  "editorial_revision": 3,
   "formal_numerical_table_sha256": {
     "tab:topic_examples": "280e26ad4e34977afeba332e63998b1dfc968f2fd25e93cc1cce05e468734b62",
     "tab:equivalence": "fe0ca7541b05459f010810fd7610ab67f30b476e318d1759ab8653ef2c122ea8",
@@ -35,5 +37,6 @@
       2247,
       50
     ]
-  }
+  },
+  "code_verification": "code-verification-r3"
 }
