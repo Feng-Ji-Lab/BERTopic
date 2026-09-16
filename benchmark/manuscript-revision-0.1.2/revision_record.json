@@ -4,16 +4,36 @@
   "formal_results": "benchmark/results",
   "example_results": "benchmark/example-results",
   "source_topic_metadata_sha256": "c485e09dc0ad038246502527b58e670cb5b485ae9928193d66bbc19bcd332790",
-  "manuscript_pages": 29,
+  "manuscript_pages": 27,
   "formal_numerical_tables_unchanged": true,
   "latex_final_warnings": 0,
   "visual_checks": [
-    "API mapping table, page 8",
-    "Worked-example figure, page 15"
+    "Title page and complete abstract, page 1",
+    "API mapping table, page 7",
+    "Worked-example figure, page 14",
+    "Equivalence and runtime tables, page 18"
   ],
   "pending": [
     "Historical SMS selection/reconstruction (E deferred)",
     "Archive DOI and confirmed author facts",
     "Complete historical R dependency lock"
-  ]
+  ],
+  "editorial_revision": 2,
+  "formal_numerical_table_sha256": {
+    "tab:topic_examples": "280e26ad4e34977afeba332e63998b1dfc968f2fd25e93cc1cce05e468734b62",
+    "tab:equivalence": "fe0ca7541b05459f010810fd7610ab67f30b476e318d1759ab8653ef2c122ea8",
+    "tab:benchmark": "8f6392a6fb2f878d29cee462f73fa7602235fc795a38d541e4642bec85934f2a"
+  },
+  "example_outcome_checks": {
+    "query_topic": 7,
+    "query_score": 0.66897,
+    "predictions": [
+      -1,
+      7
+    ],
+    "training_matrix_dimensions": [
+      2247,
+      50
+    ]
+  }
 }

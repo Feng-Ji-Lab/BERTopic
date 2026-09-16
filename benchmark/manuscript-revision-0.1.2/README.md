@@ -1,8 +1,8 @@
 # Revised manuscript for the validated Windows 0.1.2 analysis
 
-This snapshot contains the revised 29-page paper, bibliography, figure source/assets and successful TeX build logs. The earlier manuscript-0.1.2 snapshot remains the historical analysis draft.
+This snapshot contains the second-round revised 27-page paper, bibliography, figure source/assets and successful TeX build logs. The earlier manuscript-0.1.2 snapshot remains the historical analysis draft.
 
-Changes cover the missing API mappings, cached-state reassignment, representative-document and matrix semantics, six restoration checks, exact package checks, bounded archive reconstruction, environment setup and versioned public materials. Formal numerical table bodies match benchmark/results/artifacts exactly. The new paper figure is drawn from the full example's own archived topic_info.csv; it does not fit a new model.
+The second revision condenses repeated scope statements and reports the archived search and prediction outcomes. Changes also cover the missing API mappings, cached-state reassignment, representative-document and matrix semantics, six restoration checks, exact package checks, bounded archive reconstruction, environment setup and versioned public materials. Formal numerical table bodies match benchmark/results/artifacts exactly. The new paper figure is drawn from the full example's own archived topic_info.csv; it does not fit a new model.
 
 Reproduce the figure from this snapshot directory:
 

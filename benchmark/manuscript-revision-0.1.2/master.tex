@@ -102,7 +102,7 @@ and Feng Ji\textsuperscript{1}\\[0.5em]
 \thispagestyle{fancy}
 
 \begin{abstract}
-BERTopic provides an embedding-based approach to topic modeling, but its implementation and compatible machine-learning components are maintained primarily in Python. R users can connect to that ecosystem through general-purpose interoperability code or dedicated packages, although the resulting workflows still require explicit management of Python environments, object conversion, and model state. We describe \pkg{BERTopic}, an open-source R interface that retains the fitted Python model while exposing common operations through an S3 object, R functions, tibbles, and matrices. An SMS example illustrates environment selection, fitting, inspection, prediction, export, visualization, and persistence. We also tested whether the wrapper preserved selected outputs from equivalent direct Python code. Five paired fresh-process runs used the same 2,247 documents and frozen five-dimensional reduced embeddings, with identically configured components, software versions, and process settings. The two paths returned identical assignments, metadata, and ordered term keys; weights and membership-strength matrices agreed within an absolute tolerance of 1e-12. In this controlled Windows task, paired R-minus-Python differences had medians of 4.183 seconds for fitting, 11.400 seconds for cold-process time, and 200.0 MiB for peak memory. Because embedding generation and UMAP fitting were excluded, these measurements describe the additional costs of the tested R workflow rather than complete BERTopic performance. The contribution is an R-oriented access layer and a validation of its tested fitting and extraction path, not a new topic model or an independent implementation of BERTopic.
+BERTopic provides an embedding-based approach to topic modeling. We describe \pkg{BERTopic}, an open-source R interface that retains fitted Python models and exposes S3 methods, tibbles, and matrices. An SMS example covers setup, fitting, inspection, prediction, visualization, export, and persistence. Five paired fresh-process runs compared selected R and Python outputs using 2,247 documents and frozen five-dimensional reduced embeddings, with identically configured components and process settings. The two paths returned identical assignments, metadata, and ordered term keys; weights and membership-strength matrices agreed within an absolute tolerance of 1e-12. In this controlled Windows task, paired R-minus-Python differences had medians of 4.183 seconds for fitting, 11.400 seconds for cold-process time, and 200.0 MiB for peak memory. Embedding generation and UMAP fitting were excluded from these workflow measurements. The contribution is an R-oriented access layer and a validation of its tested fitting and extraction path, not a new topic model or an independent implementation of BERTopic.
 \end{abstract}
 
 \noindent\textbf{Keywords:} topic modeling; BERTopic; R package; Python interoperability; behavioral text analysis; research software
@@ -115,19 +115,15 @@ Classical methods such as latent semantic analysis, probabilistic latent semanti
 
 BERTopic is a modular framework in this family \citep{grootendorst2022bertopic}. Its default workflow combines contextual embeddings, UMAP dimensionality reduction \citep{mcinnes2018umap}, HDBSCAN clustering \citep{campello2013density,mcinnes2017hdbscan}, and class-based TF--IDF (c-TF--IDF) topic representations. Researchers can replace these components, but the official implementation and the compatible embedding and clustering ecosystem are maintained primarily in Python.
 
-This dependence on Python can complicate projects in which data management, statistical analysis, visualization, and reporting are conducted in R \citep{rcore2026}. R supports text-analysis workflows through \pkg{tm}, \pkg{tidytext}, and \pkg{quanteda} \citep{feinerer2008tm,silge2016tidytext,benoit2018quanteda}. Researchers can exchange files between R and Python or write \pkg{reticulate} code, although either route requires decisions about Python selection, argument passing, object conversion, and error diagnosis \citep{ushey2026reticulate}. Dedicated R interfaces have also emerged. In particular, \pkg{bertopicr} provides helpers for Python-environment setup, model training, persistence, inspection, and visualization \citep{petric2026bertopicr}. The relevant question is therefore not whether an R interface exists, but how a particular interface organizes the workflow, which backend versions it supports, and which operations have been tested.
+This dependence on Python introduces an interoperability step for projects whose data management, statistical analysis, visualization, and reporting are conducted in R \citep{rcore2026}. Packages such as \pkg{tm}, \pkg{tidytext}, and \pkg{quanteda} support R text-analysis workflows \citep{feinerer2008tm,silge2016tidytext,benoit2018quanteda}; \pkg{reticulate} connects these workflows to Python \citep{ushey2026reticulate}. Dedicated interfaces can organize Python selection, argument passing, object conversion, and error diagnosis. For example, \pkg{bertopicr} provides helpers for environment setup, training, persistence, inspection, and visualization \citep{petric2026bertopicr}. Choosing an interface therefore requires attention to its object model, supported backend versions, and evidence for the operations an analysis needs.
 
-The R interface does not change BERTopic's statistical model. Its purpose is to call the official implementation from R and return selected results in forms that can be used in later R analyses. Evaluating whether the wrapper passes inputs and outputs correctly is separate from evaluating whether BERTopic produces substantively valid topics for a particular corpus.
-
-We present \pkg{BERTopic}, an alternative R interface to the Python implementation. Its design emphasizes a retained Python model inside an S3 object, familiar methods such as \code{predict()}, \code{coef()}, \code{as.data.frame()}, and \code{fortify()}, explicit dense or sparse export, and functions for selecting and diagnosing the Python environment. A worked example demonstrates the intended workflow. We then compare the R call with equivalent direct Python code under a controlled configuration and report output agreement together with descriptive runtime and memory measurements. This comparison examines the wrapper's handling of selected inputs and outputs; it is not a comparison of two topic-modeling algorithms, a feature-completeness study of R packages, or a validation of the substantive topics recovered from the SMS corpus.
+We present \pkg{BERTopic}, an alternative R interface organized around a retained Python model and familiar S3 methods, including \code{predict()}, \code{coef()}, \code{as.data.frame()}, and \code{fortify()}. Explicit dense or sparse export and environment diagnostics support subsequent R analyses. A worked example demonstrates this workflow, followed by a controlled comparison of output agreement, runtime, and memory use against equivalent direct Python code. This comparison examines the wrapper's handling of selected inputs and outputs; it is not a comparison of two topic-modeling algorithms, a feature-completeness study of R packages, or a validation of the substantive topics recovered from the SMS corpus.
 
 \section{Computational Background and Scope}
 
 \subsection{Scope of the R package}
 
-The Python library performs document embedding, dimensionality reduction, clustering, vectorization, topic weighting, and optional refinement of topic labels. The R package validates inputs, calls Python through \pkg{reticulate}, stores the fitted Python object, and converts selected results to R objects. It also provides functions for installing and selecting a Python environment, checking dependencies, and saving fitted models. The statistical properties of the fitted model remain those of the Python library and the component models chosen by the user.
-
-The following summary describes the BERTopic pipeline only to show how the R functions correspond to the Python implementation. The worked example demonstrates use of the package. The later comparison checks selected results against a direct Python call and measures runtime and memory use. Neither exercise establishes that the topics from an unsupervised model are substantively valid.
+The Python library performs document embedding, dimensionality reduction, clustering, vectorization, topic weighting, and optional label refinement. The R package validates inputs, calls Python through \pkg{reticulate}, retains the fitted Python object, and converts selected results to R objects (Figure~\ref{fig:architecture}). It also provides environment selection, dependency checks, and model persistence. The following pipeline summary locates these interface operations within BERTopic; mathematical derivations remain in the cited upstream method papers.
 
 \subsection{The six-stage upstream pipeline}
 
@@ -182,17 +178,13 @@ The resulting object combines document assignments, topic-level term representat
 \label{fig:architecture}
 \end{figure}
 
-\subsection{Methodological scope}
-
-The package does not reproduce UMAP, HDBSCAN, or c-TF--IDF in R. Their mathematical derivations are outside the scope of this paper and are available in the cited method papers and BERTopic documentation. Accordingly, the paper focuses on how arguments and objects are passed between R and Python, how Python environments are selected and checked, and whether selected outputs match those from a direct Python call.
-
 \section{Software Design and Implementation}
 
 \subsection{Relationship to other R interfaces}
 
-The R packages \pkg{BERTopic} and \pkg{bertopicr} both connect R to the Python BERTopic ecosystem through \pkg{reticulate} \citep{petric2026bertopicr}. Their functionality overlaps: both support environment setup, model fitting, inspection, persistence, and visualization. The present package is organized around a \code{bertopic\_r} S3 object that retains the upstream model and adds familiar R methods, explicit conversion to common R data structures, and environment diagnostics. These design choices provide an alternative API rather than an independent statistical implementation.
+Both \pkg{BERTopic} and \pkg{bertopicr} connect R to Python BERTopic through \pkg{reticulate} and support environment setup, fitting, inspection, persistence, and visualization \citep{petric2026bertopicr}. The present interface centers these operations on a \fcode{bertopic_r} S3 object, with explicit conversion to R data structures and environment diagnostics. Table~\ref{tab:api_map} documents this API organization.
 
-This article evaluates selected input and output mappings against direct Python execution; it does not provide a head-to-head usability study or establish that one R package is generally preferable. Researchers should consider backend-version support, the operations required for their analysis, the available tests, and the preferred object model when choosing an interface. Table~\ref{tab:api_map} therefore documents the scope of \pkg{BERTopic}; it should not be read as evidence that every listed helper has received the same level of validation.
+The evaluation compares selected operations with direct Python execution. A comparative usability or feature-completeness study would require separate evidence. Backend support, required operations, tests, and preferred object model remain relevant when choosing between R interfaces.
 
 \subsection{R wrapper and model object}
 
@@ -238,7 +230,7 @@ R function & Python operation & R result or purpose \\
 \end{threeparttable}
 \end{table}
 
-The package also supplies S3 methods. \code{print()} and \code{summary()} provide compact model information; \code{predict()} presents transformation as a familiar prediction task; \code{coef()} returns top terms across topics; and \code{as.data.frame()} and \code{fortify()} support common R data workflows. These methods organize access to the fitted object but do not change its Python computations. Table~\ref{tab:api_map} lists the main functions. The controlled comparison in Section~\ref{sec:evaluation} covers only the fitting and extraction functions used in that test, not every helper in the table.
+S3 methods provide familiar entry points: \code{print()} and \code{summary()} summarize the model, \code{predict()} transforms new documents, \code{coef()} returns topic terms, and \code{as.data.frame()} and \code{fortify()} expose metadata for R workflows. The fitting and extraction comparison in Section~\ref{sec:evaluation} and the package checks provide different forms of evidence; the API table alone does not establish equal validation of every helper.
 
 \subsection{Dependency management and diagnostics}
 
@@ -282,7 +274,7 @@ Variable & R type & Role & Example or summary \\
 \end{threeparttable}
 \end{table}
 
-The sequence covers environment diagnosis, fitting, inspection, semantic search, prediction, export, visualization, topic-representation updates, and persistence. It illustrates how the functions are intended to be combined; it is not a comparison of topic-modeling algorithms or evidence that topics recovered from this corpus represent behavioral constructs.
+The example proceeds from environment diagnosis and fitting to inspection, search, prediction, export, visualization, representation updates, and persistence. Its outputs are archived separately from the frozen-input comparison.
 
 \subsection{Environment check and fitting}
 
@@ -320,7 +312,7 @@ model <- bertopic_fit(
 )
 \end{lstlisting}
 
-The number and composition of topics depend on the embedding model, reducer, clusterer, vectorizer, random state, and software versions. Users should therefore inspect the fitted object rather than expect the counts reported for the separate controlled evaluation below.
+The complete example returned 50 non-outlier topics and 808 outlier messages. It uses the backend's default vectorizer, whereas the controlled evaluation specifies English stop words. Their term representations and automatic names therefore differ despite matching topic counts. The archived example outputs provide the reference for the code and figure in this section.
 
 \subsection{Topic inspection and search}
 
@@ -342,7 +334,7 @@ document_info <- bertopic_get_document_info(model, docs)
 head(document_info, 8)
 \end{lstlisting}
 
-Topic terms, counts, representative documents, and document-level information support inspection of the fitted solution. In the tested backend, \code{rank} identifies the order of returned representative documents; it is not a calibrated confidence score, and \code{top\_n} cannot request more documents than the backend retained. Researchers should inspect several documents per topic and document any coding or adjudication used to assign substantive labels. Automatic term-based names remain descriptions of cluster-specific patterns rather than validated behavioral constructs.
+In the retained output, the query \code{free subscription message} returned topic 7, named \fcode{7_comuk_free_unsubscribe_stop}, with a highest similarity score of 0.669. This score measures similarity to a topic representation, not confidence in a behavioral category. Counts, terms, and representative documents provide complementary information for inspecting the match. In the tested backend, \code{rank} records the returned document order, and \fcode{top_n} limits the documents already retained by Python. Researchers should inspect several documents per topic and record any coding or adjudication used to assign substantive labels.
 
 \subsection{Prediction and R-native export}
 
@@ -364,17 +356,17 @@ document_topic <- bertopic_as_document_topic_matrix(
 stopifnot(nrow(document_topic) == length(docs))
 \end{lstlisting}
 
-When \code{calculate\_probabilities = TRUE}, the matrix contains HDBSCAN-derived membership strengths for non-outlier topics. Its columns are labeled with the actual fitted topic identifiers; they should not be interpreted from their positions or assumed to retain the same meaning after reduction. Dense and sparse exports were compared in the complete worked example. These values can be used descriptively or as features in downstream models, but their measurement interpretation and uncertainty require evaluation for the substantive application.
+The two new messages were assigned to topics \code{-1} and \code{7}, respectively. The first result illustrates that a semantically readable message can still fall outside the fitted density clusters; an outlier assignment is a model result rather than a judgment about the message's meaning. The exported training matrix contained 2,247 rows and 50 non-outlier-topic columns. With \fcode{calculate_probabilities = TRUE}, its entries are HDBSCAN-derived membership strengths. Columns carry the actual fitted topic identifiers, whose meanings may change after topic reduction. Dense and sparse exports agreed in the complete example. Using these values as downstream features requires evaluation of their measurement interpretation and uncertainty.
 
 \subsection{Visualization, representation updates, and persistence}
 
 The wrapper writes Python Plotly figures to HTML and preserves hover information. Its standard HTML export references the Plotly content-delivery network. The retained worked-example outputs therefore also include self-contained HTML, Plotly JSON, and static R figures for offline inspection. Figure~\ref{fig:worked_counts} illustrates the eight largest non-outlier topics using the full example's fitted assignments and automatic names; it is a static summary rather than a capture of the interactive topic projection.
 
-
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.98\linewidth]{figures/worked_example_topic_counts.pdf}
-\caption{Eight largest non-outlier topics in the complete SMS worked example. Bars show message counts, and labels are the fitted model's automatic topic names. The figure uses the example's own archived topic metadata, before representation updates; these names are not substantive coding judgments. The controlled benchmark uses a separately configured vectorizer.}
+\caption{Eight largest non-outlier topics in the complete SMS example, before representation updates. Counts and automatic names come from its archived topic metadata. The controlled benchmark uses a different vectorizer.}
+
 \label{fig:worked_counts}
 \end{figure}
 
@@ -417,7 +409,7 @@ The SMS data contain no genuine time variable. We therefore do not interpret a t
 
 \subsection{Benchmark design}
 
-Because the R and Python calls use the same Python library, a comparison of topic quality would not compare two different algorithms. We instead tested whether the R wrapper returned the same selected outputs as equivalent Python code and measured the additional runtime and memory used by the R process. This test does not assess whether BERTopic discovers substantively valid topics.
+The evaluation asks whether the R fitting and extraction path preserves the outputs of equivalent direct Python code, and quantifies its runtime and memory requirements. Frozen reduced embeddings isolate this path from transformer inference and stochastic dimensionality reduction.
 
 The benchmark used 2,247 SMS messages and installed \pkg{BERTopic} 0.1.2, tag \fcode{v0.1.2}, source commit \fcode{faee106}. The exact source archive checksum is retained with the outputs. Embeddings were generated once with \fcode{all-MiniLM-L6-v2} at immutable revision \fcode{1110a243fdf4706b3f48f1d95db1a4f5529b4d41}, then reduced from 384 to five dimensions with UMAP and \fcode{random_state = 42}. The frozen array was stored as float64 in column-major order to match R's conversion through \pkg{reticulate}. Both paths used \fcode{BaseDimensionalityReduction()}, HDBSCAN with \fcode{min_cluster_size = 10} and \fcode{prediction_data = TRUE}, an English-stop-word \fcode{CountVectorizer}, and \fcode{calculate_probabilities = TRUE}. Document and array SHA-256 hashes were \fcode{2f90a92a...fb036675} and \fcode{f8169618...92bc3531}; full hashes and preparation settings are retained in the manifest.
 
@@ -478,7 +470,7 @@ Maximum probability difference & --- & --- & \texttt{4.86e-16} \\
 \end{tabularx}
 \end{table}
 
-Under this configuration, the R wrapper and direct Python code produced the same selected outputs. The comparison does not imply that separate stochastic fits will always be identical, nor does it validate the substantive interpretation of the recovered topics.
+Output agreement supports the tested conversion and extraction path. Independent stochastic fits require a separate stability assessment, described below.
 
 \subsection{Runtime and memory use}
 
@@ -504,7 +496,7 @@ R interface & 4.810 [4.810, 4.830] & 28.300 [28.280, 28.410] & 602.9 [601.3, 604
 \end{threeparttable}
 \end{table}
 
-Direct Python used less time and memory in this Windows configuration. Paired median differences were 4.183 seconds for fitting, 11.400 seconds for cold-process time, and 200.0 MiB for peak memory. Embedding generation and reduction were excluded. These five replications of one corpus and configuration do not establish general performance advantages.
+Direct Python used less time and memory in this configuration. The extra R fit time includes input validation and conversion; cold-process and peak-memory measurements also include the two-runtime workflow. These aggregate measurements cannot attribute the difference to individual operations or predict its size for an end-to-end analysis.
 
 \subsection{Reproducibility under stochastic fitting}
 
@@ -570,17 +562,15 @@ Saved model cannot be restored elsewhere & Backend or serialization mismatch & M
 
 \section{Discussion}
 
-The controlled comparison establishes a limited but useful result: for the frozen inputs and core fitting and extraction path tested here, the R wrapper preserved the selected outputs of direct Python execution. The additional time and memory reflect the cost of running R together with an embedded Python interpreter, but the short controlled task is not representative of an end-to-end analysis that includes transformer inference and UMAP. The evidence therefore supports an input--output mapping claim, not a general claim about computational efficiency, topic quality, or the reliability of every exported helper.
+The results support the package's central interface claim: with the recorded frozen inputs and components, the tested R fitting and extraction path preserved selected outputs from direct Python execution. Package regressions and restoration checks provide additional evidence for the exercised workflow operations. The timing and memory differences quantify an integration cost for this short Windows task; they do not measure a complete analysis including transformer inference and UMAP.
 
-The practical value of the interface lies in keeping the fitted Python model and its commonly used outputs inside an R project. Researchers can move topic assignments, terms, membership strengths, and visualizations into later R analyses without repeatedly exchanging intermediate files. This benefit is most relevant when data preparation, statistical modeling, graphics, and reporting are already conducted in R. Direct Python remains the simpler option for Python-centered projects, for immediate access to newly released upstream features, or when avoiding the memory cost of two runtimes is important. Researchers who prefer an R interface should also compare the object model, backend support, documentation, and tests of \pkg{BERTopic} with those of \pkg{bertopicr}; the present study does not establish the superiority of either package.
+The practical benefit is access to the fitted Python model and its common outputs within an R project. Assignments, terms, membership strengths, and visualizations can feed subsequent R analyses without repeated file exchange. This is useful when preparation, modeling, graphics, and reporting already use R. Python-centered projects may prefer direct access to upstream features and a single runtime. Among R interfaces, users should compare the object model, backend support, documentation, and tests with those of \pkg{bertopicr}.
 
-Cross-language convenience does not remove the need for software-version control. Python package resolution, compiled libraries, model downloads, and hardware differences can prevent the same code from running elsewhere. The use of \code{...} exposes advanced constructor arguments but cannot protect users from changed upstream signatures or incompatible component versions. The tested backend is pinned to Python BERTopic 0.16.0. A citable analysis should therefore record the exact R and Python environments, save component settings, verify model restoration, and archive the package source used for the results. Organizing research products as versioned R packages and preserving the associated materials can make those dependencies more visible \citep{vuorre2021sharing}.
-
-The controlled benchmark covers one Windows configuration, one short-text corpus, BERTopic 0.16.0, and five timing replications; embedding generation and reduction are excluded. Package checks and archive reconstruction provide additional evidence about the exercised R wrappers, but do not extend the benchmark to other operating systems, backend releases, or all advanced configurations. The SMS illustration also does not establish substantive topic quality.
+Reproducibility depends on the surrounding software environment. Changed Python signatures, compiled dependencies, model downloads, and hardware-specific libraries can affect execution and results. The present evidence covers BERTopic 0.16.0 on one Windows configuration, one corpus, and five timing replications. The archive confirmation used a new checkout and isolated package installation while reusing existing dependencies; a complete historical R dependency lock remains unavailable. Analyses should record both environments and component settings, retain the source and fitted model, and test the restoration operation they intend to use. Versioned R research packages can help make these dependencies visible \citep{vuorre2021sharing}.
 
 The substantive limits of unsupervised topic modeling are unchanged by the interface. A coherent list of top words does not establish that a topic is a reliable psychological construct. Short documents near cluster boundaries may move between a substantive topic and the outlier class under modest specification changes, and HDBSCAN-derived membership strengths are not automatically calibrated probabilities of theoretically defined categories. Behavioral applications should justify the unit of analysis and embedding model, report preprocessing and component choices, inspect multiple representative documents, assess stability across reasonable specifications, and validate any topic-derived measure against its intended use. Evaluations of behavioral text-mining methods similarly emphasize that convenient model output cannot substitute for task-specific validation against human judgments or other relevant criteria \citep{macanovic2024systematic}.
 
-In its current form, \pkg{BERTopic} provides an R-oriented access layer whose selected fitting and extraction outputs agree with direct Python execution under the tested configuration. The retained model, R data structures, explicit environment selection, and checked persistence workflows support integration into an R project. The evidence supports these interface and workflow claims while leaving the validity of topic-derived behavioral measures to application-specific evaluation.
+The interface connects the official Python model to familiar R objects, environment diagnostics, and checked persistence workflows. The controlled comparison supports its tested input--output mappings, while application-specific evidence remains necessary for interpreting topic-derived behavioral measures.
 
 \section*{Declarations}
 

@@ -10,11 +10,11 @@
 - D1：0.1.2 源码 tag 和确切归档已推送至 GitHub；远端 tag 对应 faee106，归档 SHA-256 不变。
 - D2：确切安装的 0.1.2 已完成五组独立 R/Python benchmark 和完整 worked example；正文数字、表格和图已重新生成。
 - D3：输入、完整环境、脚本、原始输出、恢复检查、图/HTML、论文源码与 PDF 已归档并推送。大体积 pickle 可由脚本重建，其哈希已记录；公开 DOI 属于 F1。
-- 验证：159 PASS、0 FAIL、0 WARN、0 SKIP；R CMD check 为 0 ERROR、0 WARNING、1 条原有 UTF-8 数据 NOTE。五组正式对比与六项恢复检查全部通过；论文完整编译为 26 页。
+- 验证：159 PASS、0 FAIL、0 WARN、0 SKIP；R CMD check 为 0 ERROR、0 WARNING、1 条原有 UTF-8 数据 NOTE。五组正式对比与六项恢复检查全部通过；原始分析稿完整编译为 26 页；当前修订稿见 G1。
 - E：按用户要求跳过，未改动 SMS 选择方式或伪造历史重建。
 - F1：ZIP、离线 Git bundle、Windows 重建入口和 Zenodo metadata 草稿已完成。新工作副本的五组对比、六项恢复检查全部通过，11 份数值 CSV 与正式结果逐字节相同。现有 Windows Python/R 依赖被复用，未再次从零安装 Conda 环境。DOI、账号及 creators/license 确认仍待完成。
 - F2–F3：作者信息 JSON 与 CRediT 草案已提供；正式单位、声明和贡献归属待作者确认。
-- G1：主稿已补齐 API 表、状态同步、六项恢复检查、Windows 包检查和归档重建说明，加入实际示例图；修订 PDF 为 29 页。正式 benchmark 数字与表格不变。R 依赖未完全锁定，E/F 的事实占位符继续保留，未声称达到投稿完成条件。
+- G1：主稿已补齐 API 表、状态同步、六项恢复检查、Windows 包检查和归档重建说明，加入实际示例图；第二轮修订压缩重复范围声明，补入真实查询/预测输出，摘要完整置于首页；PDF 为 27 页。正式 benchmark 数字与三张数值表格不变，同步脚本不会覆盖解释段落。R 依赖未完全锁定，E/F 的事实占位符继续保留，未声称达到投稿完成条件。
 
 ## 使用说明
 
