@@ -33,13 +33,53 @@
 `%||%` <- function(a, b) if (is.null(a) || (is.logical(a) && length(a) == 1 && is.na(a))) b else a
 
 
+# Read the single dependency specification used by both installation routes.
+# system.file() covers an installed package; the fallback supports pkgload and
+# direct source-tree testing.
+#' @keywords internal
+.bertopic_python_requirements <- function() {
+  path <- system.file("python", "requirements.txt", package = "BERTopic")
+  if (!nzchar(path)) {
+    source_path <- file.path("inst", "python", "requirements.txt")
+    if (file.exists(source_path)) path <- source_path
+  }
+  if (!nzchar(path) || !file.exists(path)) {
+    stop("BERTopic's Python requirements file is missing.", call. = FALSE)
+  }
+
+  requirements <- trimws(readLines(path, warn = FALSE, encoding = "UTF-8"))
+  requirements <- requirements[nzchar(requirements) & !startsWith(requirements, "#")]
+  if (!length(requirements)) {
+    stop("BERTopic's Python requirements file is empty.", call. = FALSE)
+  }
+  requirements
+}
+
+#' @keywords internal
+.validate_bertopic_modules <- function(environment) {
+  required <- c(
+    "bertopic", "sentence_transformers", "torch", "transformers",
+    "umap", "hdbscan", "numpy", "scipy", "sklearn", "pandas", "plotly"
+  )
+  unavailable <- required[!vapply(required, reticulate::py_module_available, logical(1))]
+  if (length(unavailable)) {
+    stop(sprintf(
+      "Python environment '%s' cannot import required module(s): %s.",
+      environment,
+      paste(unavailable, collapse = ", ")
+    ), call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+
 # ===== Conda route ================================================================
 
 #' Install Python dependencies for BERTopic (Conda route)
 #'
-#' Creates (or reuses) a Conda environment with a pinned Python toolchain,
-#' installs the scientific stack + PyTorch (CPU) + sentence-transformers, then
-#' installs \code{bertopic==0.16.0} via pip. Optionally validates imports.
+#' Creates (or reuses) a Conda environment with a pinned Python toolchain and
+#' installs the package's exact Python dependency specification via pip. The
+#' Conda and virtualenv routes consume the same specification.
 #'
 #' @param envname Character. Conda environment name. Default \code{"r-bertopic"}.
 #' @param python_version Character. Python version to use, e.g. \code{"3.10"}.
@@ -93,56 +133,41 @@ install_py_deps_conda <- function(envname = "r-bertopic",
     envs <- c(envs, envname)
   }
 
-  # 2) Core scientific stack
-  msg("[install_py_deps_conda] Installing core scientific stack...")
-reticulate::conda_install(envname, c(
-  "pip",
-  "numpy==1.26.4","scipy==1.11.*","scikit-learn==1.4.*","pandas",
-  "numba==0.59.*","umap-learn==0.5.5","hdbscan==0.8.37","pynndescent==0.5.12",
-  "joblib","cloudpickle","dill","tqdm","packaging","requests","pillow","plotly>=5",
-  "vc14_runtime","intel-openmp"
-), channel = "conda-forge")
-
-
-reticulate::conda_install(envname, c(
-  "transformers==4.47.0",
-  "accelerate==0.30.1",
-  "tokenizers==0.21.0",
-  "huggingface-hub>=0.23",
-  "safetensors",
-  "sentence-transformers==2.7.0"
-), pip = TRUE)
-
-  # 3) Torch + sentence-transformers (CPU)
-  msg("[install_py_deps_conda] Installing PyTorch (CPU) & sentence-transformers...")
-# try(reticulate::conda_remove(envname, c("pytorch","pytorch-cpu","torchvision","torchaudio")), silent = TRUE)
-reticulate::conda_install(envname, "pytorch-cpu==2.1.*", channel = "conda-forge")
-
-
-# 4) BERTopic via pip (inside the target conda env, independent of active Python)
-msg("[install_py_deps_conda] Installing BERTopic (pip)...")
-reticulate::conda_install(envname, "bertopic==0.16.0", pip = TRUE)
-
-# 5) Optional validation
-py_exec <- reticulate::conda_python(envname)
-if (isTRUE(validate)) {
-  msg("[install_py_deps_conda] Validating imports...")
-  # If reticulate is bound to a different Python, skip validation (but finish install)
-  if (reticulate::py_available(initialize = FALSE)) {
-    cfg <- reticulate::py_config()
-    if (!.same_path(cfg$python, py_exec)) {
-      msg("[install_py_deps_conda] reticulate is initialized to another Python; ",
-          "skipping validation. After restarting, call use_bertopic_condaenv('", envname,
-          "') then run bertopic_self_check().")
-      return(invisible(py_exec))
-    }
+  # 2) Install the shared, exact dependency specification via pip.
+  py_exec <- reticulate::conda_python(envname)
+  pip_available <- tryCatch(
+    identical(system2(py_exec, c("-m", "pip", "--version"),
+                      stdout = FALSE, stderr = FALSE), 0L),
+    error = function(e) FALSE
+  )
+  if (!pip_available) {
+    msg("[install_py_deps_conda] Installing pip...")
+    reticulate::conda_install(envname, "pip", channel = "conda-forge")
   }
-  # Bind to this env for validation
-  Sys.setenv(RETICULATE_PYTHON = py_exec)
-  reticulate::py_config()
+  msg("[install_py_deps_conda] Installing pinned Python packages...")
+  reticulate::conda_install(
+    envname,
+    .bertopic_python_requirements(),
+    pip = TRUE
+  )
 
-  msg("[install_py_deps_conda] Validation OK.")
-}
+  # 3) Optional validation
+  if (isTRUE(validate)) {
+    msg("[install_py_deps_conda] Validating imports...")
+    if (reticulate::py_available(initialize = FALSE)) {
+      cfg <- reticulate::py_config()
+      if (!.same_path(cfg$python, py_exec)) {
+        msg("[install_py_deps_conda] reticulate is initialized to another Python; ",
+            "skipping validation. After restarting, call use_bertopic_condaenv('", envname,
+            "') then run bertopic_self_check().")
+        return(invisible(py_exec))
+      }
+    }
+    Sys.setenv(RETICULATE_PYTHON = py_exec)
+    reticulate::py_config()
+    .validate_bertopic_modules(envname)
+    msg("[install_py_deps_conda] Validation OK.")
+  }
 
 
   msg("[install_py_deps_conda] Done. Env: ", envname, "  Python: ", py_exec)
@@ -197,8 +222,9 @@ use_bertopic_condaenv <- function(envname = "r-bertopic", required = TRUE) {
 
 #' Install Python dependencies for BERTopic (virtualenv route)
 #'
-#' Creates (or reuses) a \code{virtualenv} and installs \code{bertopic==0.16.0}
-#' plus required dependencies via pip. Optionally validates imports.
+#' Creates (or reuses) a \code{virtualenv} and installs the package's exact
+#' Python dependency specification via pip. The Conda and virtualenv routes
+#' consume the same specification.
 #'
 #' @param envname Character. Virtualenv name. Default \code{"r-bertopic"}.
 #' @param python Character. Path to a Python executable to create the venv with.
@@ -246,25 +272,13 @@ install_py_deps_venv <- function(envname = "r-bertopic",
     venvs <- c(venvs, envname)
   }
 
-  # 2) Install packages into venv (pinned where helpful)
-  msg("[install_py_deps_venv] Installing Python packages (pip)...")
-  reticulate::virtualenv_install(envname, packages = c(
-    "numpy==1.26.4",
-    "scipy==1.11.*",
-    "scikit-learn==1.4.*",
-    "pandas",
-    "numba==0.59.*",
-    "umap-learn==0.5.5",
-    "hdbscan==0.8.37",
-    "pynndescent==0.5.12",
-    "safetensors",
-    "joblib",
-    "cloudpickle",
-    "dill",
-    "torch==2.1.*",
-    "sentence-transformers",
-    "bertopic==0.16.0"
-  ), ignore_installed = FALSE)
+  # 2) Install the same exact specification used by the Conda route.
+  msg("[install_py_deps_venv] Installing pinned Python packages...")
+  reticulate::virtualenv_install(
+    envname,
+    packages = .bertopic_python_requirements(),
+    ignore_installed = FALSE
+  )
 
   # 3) Optional validation
   py_exec <- reticulate::virtualenv_python(envname)
@@ -281,11 +295,7 @@ install_py_deps_venv <- function(envname = "r-bertopic",
       Sys.setenv(RETICULATE_PYTHON = py_exec)
       reticulate::py_config()
     }
-    must <- c("bertopic", "sentence_transformers", "torch", "umap", "hdbscan", "numpy", "sklearn")
-    for (m in must) {
-      if (!reticulate::py_module_available(m))
-        stop(sprintf("Module '%s' failed to import in venv '%s'.", m, envname), call. = FALSE)
-    }
+    .validate_bertopic_modules(envname)
     msg("[install_py_deps_venv] Validation OK.")
   }
 
@@ -348,7 +358,8 @@ use_bertopic_virtualenv <- function(envname = "r-bertopic", required = TRUE) {
 #'   \item{version}{Python version string.}
 #'   \item{numpy}{Whether NumPy is available.}
 #'   \item{numpy_version}{NumPy version string (if available).}
-#'   \item{modules}{A data.frame with availability for key modules.}
+#'   \item{bertopic_version}{BERTopic version string (if available).}
+#'   \item{modules}{A data.frame with availability and exact installed versions for key modules.}
 #' }
 #' @examples
 #' \dontrun{
@@ -359,15 +370,46 @@ bertopic_session_info <- function() {
   if (!requireNamespace("reticulate", quietly = TRUE))
     stop("Package 'reticulate' is required.", call. = FALSE)
   cfg <- reticulate::py_config()
-  mods <- c("bertopic", "sentence_transformers", "torch", "umap", "hdbscan")
-  present <- vapply(mods, reticulate::py_module_available, logical(1))
+  modules <- c(
+    "bertopic", "sentence_transformers", "torch", "transformers",
+    "umap", "hdbscan", "numpy", "scipy", "sklearn", "pandas", "plotly"
+  )
+  distributions <- c(
+    bertopic = "bertopic",
+    sentence_transformers = "sentence-transformers",
+    torch = "torch",
+    transformers = "transformers",
+    umap = "umap-learn",
+    hdbscan = "hdbscan",
+    numpy = "numpy",
+    scipy = "scipy",
+    sklearn = "scikit-learn",
+    pandas = "pandas",
+    plotly = "plotly"
+  )
+  available <- vapply(modules, reticulate::py_module_available, logical(1))
+  metadata <- try(reticulate::import("importlib.metadata"), silent = TRUE)
+  versions <- vapply(modules, function(module) {
+    if (!available[[module]] || inherits(metadata, "try-error")) return(NA_character_)
+    tryCatch(
+      as.character(metadata$version(unname(distributions[[module]]))),
+      error = function(e) NA_character_
+    )
+  }, character(1))
+  module_info <- data.frame(
+    module = modules,
+    available = unname(available),
+    version = unname(versions),
+    stringsAsFactors = FALSE
+  )
   list(
     python = cfg$python,
     libpython = cfg$libpython,
     version = cfg$version,
-    numpy = cfg$numpy,
-    numpy_version = cfg$numpy_version,
-    modules = data.frame(module = mods, available = unname(present), stringsAsFactors = FALSE)
+    numpy = unname(available[["numpy"]]),
+    numpy_version = unname(versions[["numpy"]]),
+    bertopic_version = unname(versions[["bertopic"]]),
+    modules = module_info
   )
 }
 
@@ -403,18 +445,15 @@ bertopic_available <- function() {
 
 #' Quick self-check for the BERTopic R interface
 #'
-#' Runs a quick end-to-end smoke test:
-#' \itemize{
-#'   \item Report Python path/version.
-#'   \item Verify that \code{bertopic} is importable and report its version.
-#'   \item Minimal round trip: \code{fit -> transform -> save -> load}.
-#' }
+#' Runs a deterministic fit/transform/save/load check with synthetic embeddings
+#' and compares assignments, probabilities, and topic metadata before and after
+#' loading the model.
 #'
 #' @return A named list with fields:
 #' \describe{
 #'   \item{python_ok}{Logical.}
 #'   \item{bertopic_ok}{Logical.}
-#'   \item{roundtrip_ok}{Logical.}
+#'   \item{roundtrip_ok}{Logical; true only when all compared outputs agree.}
 #'   \item{details}{Character vector of diagnostic messages.}
 #' }
 #' @examples
@@ -423,81 +462,112 @@ bertopic_available <- function() {
 #' }
 #' @export
 bertopic_self_check <- function() {
-  out <- list(python_ok = FALSE, bertopic_ok = FALSE, details = character())
+  out <- list(
+    python_ok = FALSE,
+    bertopic_ok = FALSE,
+    roundtrip_ok = FALSE,
+    details = character()
+  )
+  fail <- function(message) {
+    out$details <- c(out$details, message)
+    out
+  }
+  equal_numeric <- function(a, b) {
+    if (is.null(a) || is.null(b)) return(is.null(a) && is.null(b))
+    isTRUE(all.equal(as.matrix(a), as.matrix(b), tolerance = 1e-12, check.attributes = FALSE))
+  }
 
   if (!requireNamespace("reticulate", quietly = TRUE)) {
-    out$details <- c(out$details, "reticulate not available")
-    return(out)
+    return(fail("reticulate not available"))
   }
-
-  # Python info
-  cfg <- reticulate::py_config()
-  out$python_ok <- !is.null(cfg$python)
-
-  # bertopic importable?
+  cfg <- try(reticulate::py_config(), silent = TRUE)
+  if (inherits(cfg, "try-error") || is.null(cfg$python)) {
+    return(fail("Python is not available"))
+  }
+  out$python_ok <- TRUE
   if (!reticulate::py_module_available("bertopic")) {
-    out$details <- c(out$details, "bertopic not importable")
-    return(out)
+    return(fail("bertopic not importable"))
   }
-  bt <- reticulate::import("bertopic")
   out$bertopic_ok <- TRUE
 
-  # Prepare docs (prefer sms_spam$text; fallback to tiny list)
-  docs <- NULL
-  if (exists("sms_spam", inherits = TRUE)) {
-    sms <- get("sms_spam", inherits = TRUE)
-    if (is.data.frame(sms) && "text" %in% names(sms)) {
-      docs <- as.character(sms$text)
-    }
-  }
-  if (is.null(docs)) {
-    docs <- c(
-      "topic modeling with transformers",
-      "free ringtone offer unsubscribe stop",
-      "meeting at 3pm see you later",
-      "love you so much my life"
+  documents <- c(
+    rep("apple orange banana fruit market", 15L),
+    rep("football team match score coach", 15L),
+    rep("software code computer data model", 15L)
+  )
+  groups <- rep(seq_len(3L), each = 15L)
+  set.seed(42L)
+  centers <- rbind(
+    c(-4, 0, 0, 0, 0),
+    c(0, 4, 0, 0, 0),
+    c(0, 0, 4, 0, 0)
+  )
+  embeddings <- centers[groups, , drop = FALSE] +
+    matrix(stats::rnorm(length(documents) * 5L, sd = 0.02), ncol = 5L)
+
+  components <- try({
+    dimensionality <- reticulate::import("bertopic.dimensionality", convert = FALSE)
+    hdbscan <- reticulate::import("hdbscan", convert = FALSE)
+    text_features <- reticulate::import("sklearn.feature_extraction.text", convert = FALSE)
+    list(
+      umap = dimensionality$BaseDimensionalityReduction(),
+      hdbscan = hdbscan$HDBSCAN(
+        min_cluster_size = as.integer(5L),
+        metric = "euclidean",
+        cluster_selection_method = "eom",
+        prediction_data = TRUE
+      ),
+      vectorizer = text_features$CountVectorizer(stop_words = "english")
     )
+  }, silent = TRUE)
+  if (inherits(components, "try-error")) {
+    return(fail("Failed to construct deterministic self-check components"))
   }
 
-
-  # Construct model (with embedding model if available)
-  model <- try(bt$BERTopic(
-    embedding_model = "all-MiniLM-L6-v2",
+  model <- try(bertopic_fit(
+    documents,
+    embeddings = embeddings,
+    umap_model = components$umap,
+    hdbscan_model = components$hdbscan,
+    vectorizer_model = components$vectorizer,
     calculate_probabilities = TRUE
   ), silent = TRUE)
-  if (inherits(model, "try-error")) {
-    # Fallback without embedding_model
-    model <- try(bt$BERTopic(calculate_probabilities = TRUE), silent = TRUE)
-    if (inherits(model, "try-error")) {
-      out$details <- c(out$details, "BERTopic() constructor failed")
-      return(out)
-    }
+  if (inherits(model, "try-error")) return(fail("fit failed"))
+
+  transformed_before <- try(bertopic_transform(model, documents, embeddings), silent = TRUE)
+  info_before <- try(bertopic_topics(model), silent = TRUE)
+  if (inherits(transformed_before, "try-error") || inherits(info_before, "try-error")) {
+    return(fail("transform or topic-info extraction failed before save"))
   }
 
-  # Fit; if it fails (e.g., no model download), retry with synthetic embeddings
-  ok <- try(model$fit_transform(docs), silent = TRUE)
-  if (inherits(ok, "try-error")) {
-    np <- try(reticulate::import("numpy", convert = FALSE), silent = TRUE)
-    if (inherits(np, "try-error")) {
-      out$details <- c(out$details, "fit_transform failed")
-      return(out)
-    }
-    rs <- np$random$RandomState(as.integer(42L))
-    emb <- rs$randn(as.integer(length(docs)), as.integer(16L))
-    ok2 <- try(model$fit_transform(docs, embeddings = emb), silent = TRUE)
-    if (inherits(ok2, "try-error")) {
-      out$details <- c(out$details, "fit_transform failed (even with synthetic embeddings)")
-      return(out)
-    }
+  model_path <- file.path(tempdir(), paste0("bertopic-self-check-", Sys.getpid(), ".pkl"))
+  on.exit(if (file.exists(model_path) || dir.exists(model_path)) unlink(model_path, recursive = TRUE, force = TRUE), add = TRUE)
+  saved <- try(bertopic_save(model, model_path, serialization = "pickle", overwrite = TRUE), silent = TRUE)
+  if (inherits(saved, "try-error")) return(fail("save failed"))
+  restored <- try(bertopic_load(model_path), silent = TRUE)
+  if (inherits(restored, "try-error")) return(fail("load failed"))
+
+  transformed_after <- try(bertopic_transform(restored, documents, embeddings), silent = TRUE)
+  info_after <- try(bertopic_topics(restored), silent = TRUE)
+  if (inherits(transformed_after, "try-error") || inherits(info_after, "try-error")) {
+    return(fail("transform or topic-info extraction failed after load"))
   }
 
-  # Success — only report OK
-  out$details <- c(out$details, "OK")
+  comparisons <- c(
+    cached_topics = identical(as.integer(model$topics), as.integer(restored$topics)),
+    cached_probabilities = equal_numeric(model$probs, restored$probs),
+    topic_metadata = isTRUE(all.equal(as.data.frame(info_before), as.data.frame(info_after), check.attributes = FALSE)),
+    transformed_topics = identical(as.integer(transformed_before$topics), as.integer(transformed_after$topics)),
+    transformed_probabilities = equal_numeric(transformed_before$probs, transformed_after$probs)
+  )
+  out$roundtrip_ok <- all(comparisons)
+  if (out$roundtrip_ok) {
+    out$details <- "OK: fit/transform/save/load outputs agree"
+  } else {
+    out$details <- paste("Mismatch after load:", paste(names(comparisons)[!comparisons], collapse = ", "))
+  }
   out
 }
-
-
-
 
 #' Install Python dependencies for BERTopic (auto route)
 #'

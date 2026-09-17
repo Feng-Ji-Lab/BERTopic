@@ -29,8 +29,9 @@ if reticulate is already initialized to another Python).}
 Invisibly returns the path to the Python executable inside the venv.
 }
 \description{
-Creates (or reuses) a \code{virtualenv} and installs \code{bertopic==0.16.0}
-plus required dependencies via pip. Optionally validates imports.
+Creates (or reuses) a \code{virtualenv} and installs the package's exact
+Python dependency specification via pip. The Conda and virtualenv routes
+consume the same specification.
 }
 \examples{
 \dontrun{

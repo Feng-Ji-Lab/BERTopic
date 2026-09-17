@@ -30,3 +30,14 @@ test_that("S3 methods (summary, coef, as.data.frame, fortify) behave as expected
   expect_s3_class(ff, "data.frame")
   expect_true(all(c("doc_id", "topic") %in% names(ff)))
 })
+
+test_that("fortify is registered for ggplot2 dispatch", {
+  skip_if_not_installed("ggplot2")
+  model <- structure(list(topics = c(-1L, 2L, 2L)), class = "bertopic_r")
+
+  result <- ggplot2::fortify(model)
+
+  expect_s3_class(result, "data.frame")
+  expect_identical(result$doc_id, 1:3)
+  expect_identical(result$topic, c(-1L, 2L, 2L))
+})

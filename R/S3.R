@@ -58,7 +58,7 @@ as.data.frame.bertopic_r <- function(x, ...) {
 #' @param data Ignored.
 #' @param ... Unused.
 #' @return A data.frame of document-topic assignments.
-#' @export
+#' @exportS3Method ggplot2::fortify
 fortify.bertopic_r <- function(model, data, ...) {
   if (!inherits(model, "bertopic_r")) rlang::abort("`model` must be a 'bertopic_r' model.")
   dt <- NULL

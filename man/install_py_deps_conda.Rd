@@ -28,9 +28,9 @@ if reticulate is already initialized to another Python).}
 Invisibly returns the path to the Python executable inside the env.
 }
 \description{
-Creates (or reuses) a Conda environment with a pinned Python toolchain,
-installs the scientific stack + PyTorch (CPU) + sentence-transformers, then
-installs \code{bertopic==0.16.0} via pip. Optionally validates imports.
+Creates (or reuses) a Conda environment with a pinned Python toolchain and
+installs the package's exact Python dependency specification via pip. The
+Conda and virtualenv routes consume the same specification.
 }
 \examples{
 \dontrun{

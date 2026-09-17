@@ -18,7 +18,19 @@ bertopic_as_document_topic_matrix <- function(model, sparse = TRUE, prefix = TRU
   M <- as.matrix(probs)
   storage.mode(M) <- "double"
   if (isTRUE(prefix)) {
-    colnames(M) <- paste0("topic_", seq_len(ncol(M)) - 1L)
+    ids <- tryCatch({
+      info <- reticulate::py_to_r(model$.py$get_topic_info())
+      as.integer(info$Topic)
+    }, error = function(e) integer())
+    # BERTopic commonly omits the outlier topic (-1) from probabilities_.
+    # Drop it only when doing so makes the metadata match the matrix.
+    if (length(ids) != ncol(M) && any(ids == -1L)) {
+      ids <- ids[ids != -1L]
+    }
+    if (length(ids) != ncol(M)) {
+      rlang::abort("Cannot map probability columns to BERTopic topic IDs.")
+    }
+    colnames(M) <- paste0("topic_", ids)
   }
   if (isTRUE(sparse) && requireNamespace("Matrix", quietly = TRUE)) {
     return(Matrix::Matrix(M, sparse = TRUE))

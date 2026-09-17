@@ -5,3 +5,7 @@
 ^[^/]+\.R$
 .*\.pdf$
 .*\.tar\.gz$
+
+^benchmark$
+^Reviews$
+^provenance$

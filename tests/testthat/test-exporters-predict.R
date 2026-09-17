@@ -11,14 +11,11 @@ test_that("exporters and predict work on fitted model", {
   expect_s3_class(m, "bertopic_r")
 
   mat <- bertopic_as_document_topic_matrix(m, sparse = FALSE, prefix = TRUE)
-  if (is.null(mat)) {
-    succeed("Model did not contain probabilities; skipping matrix assertions.")
-  } else {
-    expect_true(is.matrix(mat))
-    expect_equal(nrow(mat), length(docs))
-    expect_true(ncol(mat) >= 1)
-    expect_true(all(grepl("^topic_", colnames(mat))))
-  }
+  expect_false(is.null(mat))
+  expect_true(is.matrix(mat))
+  expect_equal(nrow(mat), length(docs))
+  expect_true(ncol(mat) >= 1)
+  expect_true(all(grepl("^topic_", colnames(mat))))
 
   new_docs <- c(
     "Love you so much, see you tonight.",

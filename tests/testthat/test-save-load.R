@@ -45,18 +45,8 @@ test_that("bertopic_save/bertopic_load support file and directory paths (using s
     expect_gt(nrow(tt_file), 0)
   }
 
-  # Try transform; skip on known upstream KeyError after load
-  tr_err <- try(bertopic_transform(m_file, c("new unseen text")), silent = TRUE)
-  if (inherits(tr_err, "try-error")) {
-    msg <- conditionMessage(attr(tr_err, "condition"))
-    if (grepl("KeyError", msg, fixed = TRUE)) {
-      skip("Upstream BERTopic deserialization edge case: transform() raised KeyError after load.")
-    } else {
-      stop(tr_err)
-    }
-  } else {
-    expect_length(tr_err$topics, 1)
-  }
+  tr_file <- bertopic_transform(m_file, c("new unseen text"))
+  expect_length(tr_file$topics, 1)
 
   # ----- directory save (bundle) with embedding model -----
   if (file.exists(dir_path) || dir.exists(dir_path)) unlink(dir_path, recursive = TRUE, force = TRUE)
@@ -84,16 +74,6 @@ test_that("bertopic_save/bertopic_load support file and directory paths (using s
     expect_gt(nrow(tt_dir), 0)
   }
 
-  # Transform attempt with the same graceful skip policy
-  tr2_err <- try(bertopic_transform(m_dir, c("another text")), silent = TRUE)
-  if (inherits(tr2_err, "try-error")) {
-    msg <- conditionMessage(attr(tr2_err, "condition"))
-    if (grepl("KeyError", msg, fixed = TRUE)) {
-      skip("Upstream BERTopic deserialization edge case: transform() raised KeyError after load.")
-    } else {
-      stop(tr2_err)
-    }
-  } else {
-    expect_length(tr2_err$topics, 1)
-  }
+  tr_dir <- bertopic_transform(m_dir, c("another text"))
+  expect_length(tr_dir$topics, 1)
 })
