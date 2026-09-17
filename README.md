@@ -49,16 +49,24 @@ library(BERTopic)
 Our package relies on **reticulate**. You do **not** need a system-wide Python; we can set up an isolated one.
 
 ### 2) Install Python deps (auto-selects Conda or virtualenv)
-``` r'
+
+```r
 library(reticulate)
 library(BERTopic)
 install_py_deps(envname = "r-bertopic", python_version = "3.10")
 ```
 
 ### 3) Bind the session (auto-selects the right route)
-``` r
+
+```r
 use_bertopic("r-bertopic")
 ```
+
+### Supported Python BERTopic version
+
+The package currently targets Python `bertopic==0.16.0`. Both the Conda and virtualenv installation helpers install the same exact direct dependencies from `inst/python/requirements.txt` and run the same import validation. Other BERTopic versions are not guaranteed to work because Python method signatures and serialization behavior can change; test a version separately before using it and record the exact backend version with `bertopic_session_info()`. Export the complete resolved environment with `scripts/export_python_lock.R` after installation.
+
+Windows validation (2026-09-15, package 0.1.2, R 4.4.1, Python 3.10.21, BERTopic 0.16.0): 159 test expectations passed, with no failures, warnings or skips. R CMD check reports 0 errors, 0 warnings and one existing UTF-8 SMS data NOTE. The exact resolved environment is recorded in provenance/windows-bertopic-0.16.0.yml. The public source tag is v0.1.2; its exact archive and checksum are retained under provenance/releases/. Other backend versions remain outside this support claim.
 
 #### Self check & session info
 
@@ -284,7 +292,7 @@ set_bertopic_seed(2025)   # seeds R, NumPy, and Python's random; also sets PYTHO
 - `use_bertopic_condaenv(envname, required = TRUE)`
 - `bertopic_available()`
 - `bertopic_session_info()`
-- `bertopic_self_check(verbose = TRUE)`
+- `bertopic_self_check()`
 - `set_bertopic_seed(seed)`
 
 **Fit / transform / export**
@@ -318,3 +326,5 @@ set_bertopic_seed(2025)   # seeds R, NumPy, and Python's random; also sets PYTHO
 
 ---
 
+
+The retained scripts generate the five-pair Windows benchmark and full worked example under benchmark/results/ and benchmark/example-results/. These generated outputs are ignored by Git. Reproduction and upload-packaging code is documented in benchmark/README.md and ../bert/publication/README.md. Zenodo/OSF DOI publication and author declarations remain pending; historical SMS selection (E) is deferred.
